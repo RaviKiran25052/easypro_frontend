@@ -43,7 +43,7 @@ const Hero = () => {
 					</h1>
 
 					{/* Order Form */}
-					<div className="bg-[#fffbf7] rounded-3xl text-sm md:text-base shadow-lg p-6 mb-12 max-w-2xl mx-auto">
+					<div className="bg-[#fffbf7] rounded-3xl text-sm md:text-base shadow-lg p-6 mb-12 max-w-3xl mx-auto">
 						<div className="space-y-4">
 							{/* Text Area */}
 							<div>
@@ -87,12 +87,24 @@ const Hero = () => {
 
 							{/* File List */}
 							{formData.files.length > 0 && (
-								<div className="mt-4">
-									<p className="text-sm text-gray-600 mb-2">Attached files:</p>
-									<div className="space-y-1">
+								<div className="flex flex-col md:flex-row md:items-center gap-3 mt-4">
+									<p className="flex-shrink-0 text-sm text-gray-600">Attached files:</p>
+									<div className="flex items-center flex-wrap gap-2">
 										{formData.files.map((file, index) => (
-											<div key={index} className="text-sm text-gray-700 bg-gray-50 px-3 py-1 rounded">
+											<div key={index}
+												className="flex items-center text-sm text-gray-700 bg-cyan-100 px-3 py-1 rounded"
+											>
 												{file.name}
+												<button
+													type="button"
+													onClick={() => {
+														const updatedFiles = formData.files.filter((_, i) => i !== index);
+														setFormData({ ...formData, files: updatedFiles });
+													}}
+													className="ml-2 text-gray-500 hover:text-red-600"
+												>
+													&times;
+												</button>
 											</div>
 										))}
 									</div>
