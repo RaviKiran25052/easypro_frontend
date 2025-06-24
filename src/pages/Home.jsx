@@ -1,6 +1,7 @@
 import NavBar from "../components/NavBar"
 import EssayProJourney from "../components/Home/EssayProJourney"
 import Hero from "../components/Home/Hero"
+import EssayWritersServices from "../components/Home/EssayWritersServices"
 
 const Home = () => {
 	return (
@@ -8,6 +9,7 @@ const Home = () => {
 			<NavBar />
 			<Hero />
 			<EssayProJourney />
+			<EssayWritersServices />
 		</>
 	)
 }
