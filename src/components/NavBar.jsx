@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
+import AuthModal from './AuthModal';
 
 const NavBar = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
@@ -9,6 +10,13 @@ const NavBar = () => {
 		services: false,
 		whoWeAre: false
 	});
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalMode, setModalMode] = useState('login');
+
+	const openModal = (mode) => {
+		setModalMode(mode);
+		setIsModalOpen(true);
+	};
 
 	// Services dropdown items
 	const servicesDropdown = [
@@ -155,7 +163,10 @@ const NavBar = () => {
 
 							{/* Login Button & Mobile Menu Button */}
 							<div className="flex items-center justify-between space-x-4">
-								<button className="bg-red-400 hover:bg-orange-300 text-white px-4 py-2 rounded-full transition-colors">
+								<button
+									className="bg-red-400 hover:bg-orange-300 text-white px-4 py-2 rounded-full transition-colors"
+									onClick={() => openModal('login')}
+								>
 									Log in
 								</button>
 
@@ -254,6 +265,12 @@ const NavBar = () => {
 					</div>
 				</div>
 			</div>
+
+
+			<AuthModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+			/>
 		</div>
 	);
 };
