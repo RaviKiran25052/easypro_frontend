@@ -4,6 +4,7 @@ import Hero from "../components/Home/Hero"
 import EssayWritersServices from "../components/Home/EssayWritersServices"
 import TestimonialCards from "../components/Home/TestimonialCards"
 import OrderNow from "../components/Home/OrderNow"
+import Footer from "../components/Footer"
 
 const Home = () => {
 	return (
@@ -14,6 +15,7 @@ const Home = () => {
 			<EssayWritersServices />
 			<TestimonialCards />
 			<OrderNow />
+			<Footer />
 		</>
 	)
 }
