@@ -60,7 +60,7 @@ const TestimonialCards = () => {
 						<span className="italic text-orange-400 relative">
 							Happy Students
 							<svg className="absolute md:-bottom-9 -bottom-6 left-0 w-full md:h-8" width="247" height="21" viewBox="0 0 247 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M2 18C11.0855 11.3497 45.1621 -4.89571 122.829 7.58137C200.495 20.0584 220.531 13.0719 246 4.81896" stroke="#FDA37E" stroke-width="3" />
+								<path d="M2 18C11.0855 11.3497 45.1621 -4.89571 122.829 7.58137C200.495 20.0584 220.531 13.0719 246 4.81896" stroke="#FDA37E" strokeWidth="3" />
 							</svg>
 						</span>
 					</h2>
@@ -70,6 +70,7 @@ const TestimonialCards = () => {
 				<div className='grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-8 px-4'>
 					{testimonials.map((testimonial) => (
 						<div
+							key={testimonial.id}
 							className="relative bg-white rounded-2xl shadow-xl p-6 border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
 							data-aos="fade-up"
 						>

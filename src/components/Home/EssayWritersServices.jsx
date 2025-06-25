@@ -6,12 +6,20 @@ import 'aos/dist/aos.css';
 const EssayWritersServices = () => {
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [isPaused, setIsPaused] = useState(false);
+	const [visibleCount, setVisibleCount] = useState(getVisibleCount());
 
 	useEffect(() => {
 		AOS.init({
 			duration: 1000,
 			once: false,
 		});
+
+		const handleResize = () => {
+			setVisibleCount(getVisibleCount());
+			setCurrentSlide(0); // optional: reset position on resize
+		};
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 
 	const writers = [
@@ -74,19 +82,37 @@ const EssayWritersServices = () => {
 	];
 
 	const totalSlides = writers.length;
+	const totalWindows = Math.max(totalSlides - visibleCount + 1, 1);
+
+	function getVisibleCount() {
+		const width = window.innerWidth;
+		if (width >= 1024) return 4;  // desktop
+		if (width >= 768) return 3;   // tablet
+		return 1;                     // mobile
+	}
 
 	const nextSlide = () => {
-		setCurrentSlide((prev) => (prev + 1) % totalSlides);
+		setCurrentSlide(prev => {
+			if (prev + 1 >= totalWindows) {
+				return 0;
+			}
+			return prev + 1;
+		});
 	};
 
 	const prevSlide = () => {
-		setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+		setCurrentSlide(prev => {
+			if (prev - 1 < 0) {
+				return totalWindows - 1;
+			}
+			return prev - 1;
+		});
 	};
 
 	// Auto-play carousel - one card at a time
 	useEffect(() => {
 		if (!isPaused) {
-			const interval = setInterval(nextSlide, 3000);
+			const interval = setInterval(nextSlide, 2000);
 			return () => clearInterval(interval);
 		}
 	}, [isPaused]);
@@ -116,32 +142,24 @@ const EssayWritersServices = () => {
 							Meet Our Top <span className="text-orange-400 italic relative">
 								Essay Writers
 								<svg className="absolute -bottom-6 left-0 w-full" width="247" height="21" viewBox="0 0 247 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M2 18C11.0855 11.3497 45.1621 -4.89571 122.829 7.58137C200.495 20.0584 220.531 13.0719 246 4.81896" stroke="#FDA37E" stroke-width="3" />
+									<path d="M2 18C11.0855 11.3497 45.1621 -4.89571 122.829 7.58137C200.495 20.0584 220.531 13.0719 246 4.81896" stroke="#FDA37E" strokeWidth="3" />
 								</svg>
 							</span>
 						</h2>
 					</div>
 
 					{/* Carousel Container */}
-					<div className="mb-12 relative" data-aos="fade-up" data-aos-delay="200">
+					<div
+						className="mb-12 relative"
+						data-aos="fade-up"
+						data-aos-delay="200"
+						onMouseEnter={handleMouseEnter}
+						onMouseLeave={handleMouseLeave}
+					>
 						<div className="overflow-hidden">
 							<div
-								className="flex transition-transform duration-500 ease-in-out"
-								style={{
-									transform: `
-										translateX(
-										calc(
-											-${currentSlide} * (
-												${window.innerWidth >= 1024
-											? `25% + 1.5rem / 4`
-											: window.innerWidth >= 768
-												? `33.333% + 1.5rem / 3`
-												: `100% + 1.5rem`
-										}
-											)
-										)
-										)
-									`,
+								className="flex transition-transform duration-500 ease-in-out" style={{
+									transform: `translateX(calc(-${currentSlide * (100 / visibleCount)}% - ${currentSlide * (1.5 / visibleCount)}rem))`,
 									gap: '1.5rem'
 								}}
 							>
@@ -149,8 +167,6 @@ const EssayWritersServices = () => {
 									<div
 										key={writer.id}
 										className="flex-shrink-0 w-full md:[width:calc(33.333%-1rem)] lg:[width:calc(25%-1.125rem)] rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-										onMouseEnter={handleMouseEnter}
-										onMouseLeave={handleMouseLeave}
 									>
 										<div className="relative h-64 md:h-72">
 											<img
@@ -193,7 +209,7 @@ const EssayWritersServices = () => {
 
 					{/* Dots Indicator */}
 					<div className="flex justify-center my-6 md:my-8 space-x-2">
-						{Array.from({ length: totalSlides }).map((_, index) => (
+						{Array.from({ length: totalWindows }).map((_, index) => (
 							<button
 								key={index}
 								onClick={() => setCurrentSlide(index)}
@@ -217,8 +233,8 @@ const EssayWritersServices = () => {
 							<span className="text-orange-400 italic relative">
 								Services
 								<svg className='absolute -bottom-6 left-0 w-full' width="289" height="29" viewBox="0 0 289 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M2.01074 19.268C53.5438 12.5816 182.68 -0.0890369 286.961 2.7192" stroke="#FDA37E" stroke-width="3.72072" />
-									<path d="M41.2051 26.6832C79.1365 21.6685 174.188 12.1654 250.945 14.2716" stroke="#FDA37E" stroke-width="3.72072" />
+									<path d="M2.01074 19.268C53.5438 12.5816 182.68 -0.0890369 286.961 2.7192" stroke="#FDA37E" strokeWidth="3.72072" />
+									<path d="M41.2051 26.6832C79.1365 21.6685 174.188 12.1654 250.945 14.2716" stroke="#FDA37E" strokeWidth="3.72072" />
 								</svg>
 							</span>
 						</span>
@@ -248,7 +264,7 @@ const EssayWritersServices = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</div >
 	);
 };
 
