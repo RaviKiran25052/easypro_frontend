@@ -3,6 +3,7 @@ import EssayProJourney from "../components/Home/EssayProJourney"
 import Hero from "../components/Home/Hero"
 import EssayWritersServices from "../components/Home/EssayWritersServices"
 import TestimonialCards from "../components/Home/TestimonialCards"
+import OrderNow from "../components/Home/OrderNow"
 
 const Home = () => {
 	return (
@@ -12,6 +13,7 @@ const Home = () => {
 			<EssayProJourney />
 			<EssayWritersServices />
 			<TestimonialCards />
+			<OrderNow />
 		</>
 	)
 }
