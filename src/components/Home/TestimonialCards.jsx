@@ -51,7 +51,12 @@ const TestimonialCards = () => {
 	};
 
 	return (
-		<div className="min-h-screen py-16 px-4 md:px-20 relative overflow-hidden">
+		<div className="min-h-screen py-16 px-4 md:px-20 relative overflow-hidden"
+			style={{
+				backgroundImage: "url('/heroBg.png')",
+				backgroundSize: "cover",
+				backgroundPosition: "bottom"
+			}}>
 			<div className="relative max-w-7xl mx-auto">
 				{/* Header */}
 				<div className="text-center mb-16" data-aos="fade-down">
