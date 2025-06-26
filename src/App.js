@@ -10,6 +10,7 @@ import HowItWorks from './pages/HowItWorks';
 import Reviews from './pages/Reviews';
 import Faqs from './pages/Faqs';
 import ContactUs from './pages/ContactUs';
+import AdminHome from './pages/AdminHome';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/admin/home" element={<AdminHome />} />
       </Routes>
     </BrowserRouter>
   )

@@ -163,6 +163,10 @@ const AuthModal = ({ isOpen, onClose }) => {
 			if (result.success) {
 				toast.success('Login successful!');
 
+				if (result.role === "admin") {
+					window.location.replace('/admin/home');
+				}
+
 				// Store token if needed
 				if (result.data.token) {
 					localStorage.setItem('token', result.data.token);

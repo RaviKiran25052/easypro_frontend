@@ -64,10 +64,13 @@ const NavBar = () => {
 	};
 
 	useEffect(() => {
-		const storedUser = localStorage.getItem('user');
+		const storedUser = JSON.parse(localStorage.getItem('user'));
 		const token = localStorage.getItem('token');
 		if (storedUser && token) {
-			setUser(JSON.parse(storedUser));
+			if (storedUser.role === "admin") {
+				window.location.replace('/admin/home');
+			}
+			setUser(storedUser);
 			setIsAuthenticated(true);
 		}
 	}, [isModalOpen]);
