@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, Menu, User, X } from 'lucide-react';
 import AuthModal from './AuthModal';
 import LogoutModal from './LogoutModal';
 
@@ -7,32 +7,52 @@ const NavBar = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [activeDropdown, setActiveDropdown] = useState(null);
-	const [mobileDropdowns, setMobileDropdowns] = useState({
-		services: false,
-		whoWeAre: false,
-		userProfile: false
-	});
 	const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [user, setUser] = useState(null);
 
-	// Services dropdown items
-	const servicesDropdown = [
-		'Essay Writing',
-		'Research Papers',
-		'Thesis Writing',
-		'Editing & Proofreading',
-		'Assignment Help'
+	const navLinks = [
+		{
+			label: "Services", links: [
+				{ label: 'Essay Writing', link: "/" },
+				{ label: 'Research Papers', link: "/" },
+				{ label: 'Thesis Writing', link: "/" },
+				{ label: 'Editing & Proofreading', link: "/" },
+				{ label: 'About Us', link: "/" },
+				{ label: 'Assignment Help', link: "/" }
+			]
+		},
+		{ label: "How it works", link: "/howitworks" },
+		{ label: "Top Writers", link: "/top-writers" },
+		{
+			label: "Who Are We", links: [
+				{ label: 'Reviews', link: "/reviews" },
+				{ label: 'FAQS', link: "/faqs" },
+				{ label: 'Contact Us', link: "/contactus" }
+			]
+		}
 	];
 
-	// Who We Are dropdown items
-	const whoWeAreDropdown = [
-		'About Us',
-		'Our Team',
-		'Reviews',
-		'Guarantees',
-		'Contact'
+	const loggedNavLinks = [
+		{ label: "My Orders", link: "/user/orders" },
+		{ label: "Top Writers", link: "/top-writers" },
+		{
+			label: "Services", links: [
+				{ label: 'Essay Writing', link: "/" },
+				{ label: 'Research Papers', link: "/" },
+				{ label: 'Thesis Writing', link: "/" },
+				{ label: 'Editing & Proofreading', link: "/" },
+				{ label: 'About Us', link: "/" },
+				{ label: 'Assignment Help', link: "/" }
+			]
+		},
+		{ label: "Place Order", link: "/order" }
+	];
+
+	const userProfileDropdown = [
+		{ icon: <User className='w-4' />, label: 'Profile', action: () => window.location.href = '/user' },
+		{ icon: <LogOut className='w-4' />, label: 'Logout', action: () => setIsLogoutModalOpen(true) }
 	];
 
 	const handleLogout = () => {
@@ -43,41 +63,22 @@ const NavBar = () => {
 		localStorage.removeItem('user');
 	};
 
-	const userProfileDropdown = [
-		{ label: 'Profile', action: () => console.log('Navigate to profile') },
-		{ label: 'Logout', action: () => setIsLogoutModalOpen(true) }
-	];
-
 	useEffect(() => {
-		const handleScroll = () => {
-			setIsScrolled(window.scrollY > 50);
-		};
-
 		const storedUser = localStorage.getItem('user');
 		const token = localStorage.getItem('token');
 		if (storedUser && token) {
 			setUser(JSON.parse(storedUser));
 			setIsAuthenticated(true);
 		}
+	}, [isModalOpen]);
 
+	useEffect(() => {
+		const handleScroll = () => {
+			setIsScrolled(window.scrollY > 50);
+		};
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
-	}, []);
-
-	const toggleMobileMenu = () => {
-		setIsMobileMenuOpen(!isMobileMenuOpen);
-		// Reset mobile dropdowns when closing menu
-		if (isMobileMenuOpen) {
-			setMobileDropdowns({ services: false, whoWeAre: false });
-		}
-	};
-
-	const toggleMobileDropdown = (dropdown) => {
-		setMobileDropdowns(prev => ({
-			...prev,
-			[dropdown]: !prev[dropdown]
-		}));
-	};
+	}, [])
 
 	const handleDropdownEnter = (dropdown) => {
 		setActiveDropdown(dropdown);
@@ -88,7 +89,7 @@ const NavBar = () => {
 	};
 
 	return (
-		<div className="min-h-[88px] md:min-h-[110px] bg-white">
+		<div className="min-h-[86px] md:min-h-[110px] bg-white">
 			{/* Sticky Navbar Container */}
 			<div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
 				? 'bg-white'
@@ -111,122 +112,103 @@ const NavBar = () => {
 							<div className="hidden md:flex items-center space-x-8">
 								{!isAuthenticated ? (
 									<>
-										{/* Services Dropdown */}
-										<div
-											className="relative"
-											onMouseEnter={() => handleDropdownEnter('services')}
-											onMouseLeave={handleDropdownLeave}
-										>
-											<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
-												<span>Services</span>
-												<ChevronDown className="w-4 h-4" />
-											</button>
+										{navLinks.map((navItem, index) => {
+											// Check if it's a dropdown (has links array)
+											if (navItem.links) {
+												return (
+													<div
+														key={index}
+														className="relative"
+														onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+														onMouseLeave={handleDropdownLeave}
+													>
+														<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+															<span>{navItem.label}</span>
+															<ChevronDown className="w-4 h-4" />
+														</button>
 
-											{activeDropdown === 'services' && (
-												<div
-													className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
-													onMouseEnter={() => handleDropdownEnter('services')}
-													onMouseLeave={handleDropdownLeave}
-												>
-													{servicesDropdown.map((item, index) => (
-														<a
-															key={index}
-															href="/"
-															className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
-														>
-															{item}
-														</a>
-													))}
-												</div>
-											)}
-										</div>
-
-										{/* How it works */}
-										<a href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-											How it works
-										</a>
-
-										{/* Top Writers */}
-										<a href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-											Top Writers
-										</a>
-
-										{/* Who We Are Dropdown */}
-										<div
-											className="relative"
-											onMouseEnter={() => handleDropdownEnter('whoWeAre')}
-											onMouseLeave={handleDropdownLeave}
-										>
-											<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
-												<span>Who We Are</span>
-												<ChevronDown className="w-4 h-4" />
-											</button>
-
-											{activeDropdown === 'whoWeAre' && (
-												<div
-													className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
-													onMouseEnter={() => handleDropdownEnter('whoWeAre')}
-													onMouseLeave={handleDropdownLeave}
-												>
-													{whoWeAreDropdown.map((item, index) => (
-														<a
-															key={index}
-															href="/"
-															className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
-														>
-															{item}
-														</a>
-													))}
-												</div>
-											)}
-										</div>
+														{activeDropdown === navItem.label.toLowerCase().replace(/\s+/g, '') && (
+															<div
+																className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
+																onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+																onMouseLeave={handleDropdownLeave}
+															>
+																{navItem.links.map((dropdownItem, dropdownIndex) => (
+																	<a
+																		key={dropdownIndex}
+																		href={dropdownItem.link}
+																		className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+																	>
+																		{dropdownItem.label}
+																	</a>
+																))}
+															</div>
+														)}
+													</div>
+												);
+											} else {
+												// Regular link (no dropdown)
+												return (
+													<a
+														key={index}
+														href={navItem.link}
+														className="text-gray-700 hover:text-gray-900 transition-colors"
+													>
+														{navItem.label}
+													</a>
+												);
+											}
+										})}
 									</>
 								) : (
 									<>
-										{/* My Orders */}
-										<a href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-											My Orders
-										</a>
+										{loggedNavLinks.map((navItem, index) => {
+											// Check if it's a dropdown (has links array)
+											if (navItem.links) {
+												return (
+													<div
+														key={index}
+														className="relative"
+														onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+														onMouseLeave={handleDropdownLeave}
+													>
+														<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+															<span>{navItem.label}</span>
+															<ChevronDown className="w-4 h-4" />
+														</button>
 
-										{/* Top Writers */}
-										<a href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-											Top Writers
-										</a>
-
-										{/* Services Dropdown */}
-										<div
-											className="relative"
-											onMouseEnter={() => handleDropdownEnter('services')}
-											onMouseLeave={handleDropdownLeave}
-										>
-											<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
-												<span>Services</span>
-												<ChevronDown className="w-4 h-4" />
-											</button>
-
-											{activeDropdown === 'services' && (
-												<div
-													className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
-													onMouseEnter={() => handleDropdownEnter('services')}
-													onMouseLeave={handleDropdownLeave}
-												>
-													{servicesDropdown.map((item, index) => (
-														<a
-															key={index}
-															href="/"
-															className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
-														>
-															{item}
-														</a>
-													))}
-												</div>
-											)}
-										</div>
-
-										{/* Place Order */}
-										<a href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-											Place Order
-										</a>
+														{activeDropdown === navItem.label.toLowerCase().replace(/\s+/g, '') && (
+															<div
+																className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
+																onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+																onMouseLeave={handleDropdownLeave}
+															>
+																{navItem.links.map((dropdownItem, dropdownIndex) => (
+																	<a
+																		key={dropdownIndex}
+																		href={dropdownItem.link}
+																		className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+																	>
+																		{dropdownItem.label}
+																	</a>
+																))}
+															</div>
+														)}
+													</div>
+												);
+											} else {
+												// Regular link (no dropdown)
+												return (
+													<a
+														key={index}
+														href={navItem.link}
+														className="text-gray-700 hover:text-gray-900 transition-colors"
+													>
+														{navItem.label}
+													</a>
+												);
+											}
+										})}
 									</>
 								)}
 							</div>
@@ -258,7 +240,7 @@ const NavBar = () => {
 
 										{activeDropdown === 'userProfile' && (
 											<div
-												className="absolute top-4 right-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
+												className="absolute top-6 right-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
 												onMouseEnter={() => handleDropdownEnter('userProfile')}
 												onMouseLeave={handleDropdownLeave}
 											>
@@ -266,8 +248,9 @@ const NavBar = () => {
 													<button
 														key={index}
 														onClick={item.action}
-														className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+														className={`flex gap-2 items-center w-full text-left px-4 py-2 text-sm ${item.label === 'Logout' ? "text-red-500" : "text-gray-700"} hover:bg-gray-100 first:rounded-t-md last:rounded-b-md`}
 													>
+														{item.icon}
 														{item.label}
 													</button>
 												))}
@@ -278,7 +261,7 @@ const NavBar = () => {
 
 								{/* Mobile Menu Button */}
 								<button
-									onClick={toggleMobileMenu}
+									onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 									className="md:hidden text-gray-700 hover:text-gray-900"
 								>
 									<Menu className="w-6 h-6" />
@@ -300,7 +283,7 @@ const NavBar = () => {
 					<div className="flex items-center justify-between p-4 border-b">
 						<div className="text-xl font-bold text-gray-800">Menu</div>
 						<button
-							onClick={toggleMobileMenu}
+							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 							className="p-2 text-gray-700 hover:text-gray-900"
 						>
 							<X className="w-6 h-6" />
@@ -308,68 +291,56 @@ const NavBar = () => {
 					</div>
 
 					{/* Mobile Menu Items */}
-					<div className="p-4 space-y-4">
+					<div className="p-4 space-y-4 flex flex-col">
 						{!isAuthenticated ? (
 							<>
-								{/* Services Dropdown */}
-								<div>
-									<button
-										onClick={() => toggleMobileDropdown('services')}
-										className="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-gray-900"
-									>
-										<span>Services</span>
-										<ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdowns.services ? 'rotate-180' : ''
-											}`} />
-									</button>
-									{mobileDropdowns.services && (
-										<div className="mt-2 pl-4 space-y-2">
-											{servicesDropdown.map((item, index) => (
-												<a
-													key={index}
-													href="/"
-													className="block text-gray-600 hover:text-gray-800 py-1"
-												>
-													{item}
-												</a>
-											))}
-										</div>
-									)}
-								</div>
+								{navLinks.map((navItem, index) => {
+									// Check if it's a dropdown (has links array)
+									if (navItem.links) {
+										return (
+											<div
+												key={index}
+												className="relative"
+												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+												onMouseLeave={handleDropdownLeave}
+											>
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+													<span>{navItem.label}</span>
+													<ChevronDown className="w-4 h-4" />
+												</button>
 
-								{/* How it works */}
-								<a href="/" className="block text-gray-800 hover:text-gray-900 font-semibold">
-									How it works
-								</a>
-
-								{/* Top Writers */}
-								<a href="/" className="block text-gray-800 hover:text-gray-900 font-semibold">
-									Top Writers
-								</a>
-
-								{/* Who We Are Dropdown */}
-								<div>
-									<button
-										onClick={() => toggleMobileDropdown('whoWeAre')}
-										className="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-gray-900"
-									>
-										<span>Who We Are</span>
-										<ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdowns.whoWeAre ? 'rotate-180' : ''
-											}`} />
-									</button>
-									{mobileDropdowns.whoWeAre && (
-										<div className="mt-2 pl-4 space-y-2">
-											{whoWeAreDropdown.map((item, index) => (
-												<a
-													key={index}
-													href="/"
-													className="block text-gray-600 hover:text-gray-800 py-1"
-												>
-													{item}
-												</a>
-											))}
-										</div>
-									)}
-								</div>
+												{activeDropdown === navItem.label.toLowerCase().replace(/\s+/g, '') && (
+													<div
+														className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
+														onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+														onMouseLeave={handleDropdownLeave}
+													>
+														{navItem.links.map((dropdownItem, dropdownIndex) => (
+															<a
+																key={dropdownIndex}
+																href={dropdownItem.link}
+																className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+															>
+																{dropdownItem.label}
+															</a>
+														))}
+													</div>
+												)}
+											</div>
+										);
+									} else {
+										// Regular link (no dropdown)
+										return (
+											<a
+												key={index}
+												href={navItem.link}
+												className="text-gray-700 hover:text-gray-900 transition-colors"
+											>
+												{navItem.label}
+											</a>
+										);
+									}
+								})}
 							</>
 						) : (
 							<>
@@ -388,57 +359,66 @@ const NavBar = () => {
 									</div>
 								</div>
 
-								{/* My Orders */}
-								<a href="/" className="block text-gray-800 hover:text-gray-900 font-semibold">
-									My Orders
-								</a>
+								{loggedNavLinks.map((navItem, index) => {
+									// Check if it's a dropdown (has links array)
+									if (navItem.links) {
+										return (
+											<div
+												key={index}
+												className="relative"
+												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+												onMouseLeave={handleDropdownLeave}
+											>
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+													<span>{navItem.label}</span>
+													<ChevronDown className="w-4 h-4" />
+												</button>
 
-								{/* Top Writers */}
-								<a href="/" className="block text-gray-800 hover:text-gray-900 font-semibold">
-									Top Writers
-								</a>
-
-								{/* Services Dropdown */}
-								<div>
-									<button
-										onClick={() => toggleMobileDropdown('services')}
-										className="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-gray-900"
-									>
-										<span>Services</span>
-										<ChevronDown className={`w-4 h-4 transition-transform ${mobileDropdowns.services ? 'rotate-180' : ''
-											}`} />
-									</button>
-									{mobileDropdowns.services && (
-										<div className="mt-2 pl-4 space-y-2">
-											{servicesDropdown.map((item, index) => (
-												<a
-													key={index}
-													href="/"
-													className="block text-gray-600 hover:text-gray-800 py-1"
-												>
-													{item}
-												</a>
-											))}
-										</div>
-									)}
-								</div>
-
-								{/* Place Order */}
-								<a href="/" className="block text-gray-800 hover:text-gray-900 font-semibold">
-									Place Order
-								</a>
+												{activeDropdown === navItem.label.toLowerCase().replace(/\s+/g, '') && (
+													<div
+														className="absolute top-4 left-0 mt-2 w-48 bg-white rounded-md shadow-lg border z-50"
+														onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
+														onMouseLeave={handleDropdownLeave}
+													>
+														{navItem.links.map((dropdownItem, dropdownIndex) => (
+															<a
+																key={dropdownIndex}
+																href={dropdownItem.link}
+																className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
+															>
+																{dropdownItem.label}
+															</a>
+														))}
+													</div>
+												)}
+											</div>
+										);
+									} else {
+										// Regular link (no dropdown)
+										return (
+											<a
+												key={index}
+												href={navItem.link}
+												className="text-gray-700 hover:text-gray-900 transition-colors"
+											>
+												{navItem.label}
+											</a>
+										);
+									}
+								})}
 
 								{/* Profile Actions */}
 								<div className="pt-4 border-t space-y-2">
-									<button className="block w-full text-left text-gray-800 hover:text-gray-900 font-semibold">
-										Profile
-									</button>
-									<button
-										onClick={() => setIsLogoutModalOpen(true)}
-										className="block w-full text-left text-red-600 hover:text-red-800 font-semibold"
-									>
-										Logout
-									</button>
+									{userProfileDropdown.map((item, index) => (
+										<button
+											key={index}
+											onClick={item.action}
+											className={`flex gap-2 items-center w-full text-left py-2 ${item.label === 'Logout' ? "text-red-500" : "text-gray-700"}`}
+										>
+											{item.icon}
+											{item.label}
+										</button>
+									))}
 								</div>
 							</>
 						)}

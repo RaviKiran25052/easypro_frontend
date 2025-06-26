@@ -266,7 +266,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-2xl shadow-xl border border-orange-200">
+			<div className="bg-white rounded-2xl shadow-xl border border-orange-200 md:min-w-96">
 				{/* Header */}
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
 					<h2 className="text-2xl font-serif text-gray-800 text-center flex-1">
@@ -287,7 +287,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 				>
 					{mode === 'login' ? (
 						// Login Form
-						<div className='w-full max-w-md space-y-4 p-6'>
+						<div className='space-y-4 p-6'>
 							{/* Email/Username */}
 							<div className="space-y-2">
 								<label className="block text-sm font-medium text-gray-700">
