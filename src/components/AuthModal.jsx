@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Mail, Lock, Eye, EyeOff, Upload, Camera } from 'lucide-react';
+import { X, User, Mail, Eye, EyeOff, Camera } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -25,7 +25,6 @@ const AuthModal = ({ isOpen, onClose }) => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [rememberMe, setRememberMe] = useState(false);
 
 	// Reset form data when switching modes
 	const switchMode = (newMode) => {
@@ -42,7 +41,6 @@ const AuthModal = ({ isOpen, onClose }) => {
 		});
 		setProfilePic(null);
 		setProfilePicPreview(null);
-		setRememberMe(false);
 	};
 
 	const handleClose = () => {
@@ -168,6 +166,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 				// Store token if needed
 				if (result.data.token) {
 					localStorage.setItem('token', result.data.token);
+					localStorage.setItem('user', JSON.stringify(result.data.user));
 				}
 
 				// Reset form
@@ -216,6 +215,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 				// Store token if needed
 				if (result.data.token) {
 					localStorage.setItem('token', result.data.token);
+					localStorage.setItem('user', JSON.stringify(result.data.user));
 				}
 
 				// Reset form
@@ -266,10 +266,10 @@ const AuthModal = ({ isOpen, onClose }) => {
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-orange-200">
+			<div className="bg-white rounded-2xl shadow-xl border border-orange-200">
 				{/* Header */}
 				<div className="flex items-center justify-between p-6 border-b border-gray-100">
-					<h2 className="text-2xl font-semibold text-gray-800 text-center flex-1">
+					<h2 className="text-2xl font-serif text-gray-800 text-center flex-1">
 						{mode === 'login' ? 'User Login' : 'User Registration'}
 					</h2>
 					<button
@@ -281,103 +281,95 @@ const AuthModal = ({ isOpen, onClose }) => {
 				</div>
 
 				{/* Form */}
-				<div className="p-6 space-y-4">
-					<form onSubmit={handleSubmit} encType="multipart/form-data">
-						{mode === 'login' ? (
-							// Login Form
-							<>
-								{/* Email/Username */}
-								<div className="space-y-2">
-									<label className="block text-sm font-medium text-gray-700">
-										Email
-									</label>
-									<div className="relative">
-										<input
-											type="text"
-											name="emailOrUsername"
-											value={loginData.emailOrUsername}
-											onChange={handleLoginChange}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-											placeholder="Enter your email...."
-										/>
-										<Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-									</div>
+				<form
+					onSubmit={handleSubmit}
+					encType="multipart/form-data"
+				>
+					{mode === 'login' ? (
+						// Login Form
+						<div className='w-full max-w-md space-y-4 p-6'>
+							{/* Email/Username */}
+							<div className="space-y-2">
+								<label className="block text-sm font-medium text-gray-700">
+									Email
+								</label>
+								<div className="relative">
+									<input
+										type="text"
+										name="emailOrUsername"
+										value={loginData.emailOrUsername}
+										onChange={handleLoginChange}
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+										placeholder="Enter your email...."
+									/>
+									<Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
 								</div>
+							</div>
 
-								{/* Password */}
-								<div className="space-y-2">
-									<label className="block text-sm font-medium text-gray-700">
-										Password
-									</label>
-									<div className="relative">
-										<input
-											type={showPassword ? 'text' : 'password'}
-											name="password"
-											value={loginData.password}
-											onChange={handleLoginChange}
-											className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
-											placeholder="Enter your password...."
-										/>
-										<button
-											type="button"
-											onClick={() => setShowPassword(!showPassword)}
-											className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-										>
-											{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-										</button>
-									</div>
-								</div>
-
-								{/* Remember Me & Forgot Password */}
-								<div className="flex items-center justify-between text-sm">
-									<label className="flex items-center">
-										<input
-											type="checkbox"
-											checked={rememberMe}
-											onChange={(e) => setRememberMe(e.target.checked)}
-											className="mr-2"
-										/>
-										<span className="text-gray-600">Remember me</span>
-									</label>
+							{/* Password */}
+							<div className="space-y-2">
+								<label className="block text-sm font-medium text-gray-700">
+									Password
+								</label>
+								<div className="relative">
+									<input
+										type={showPassword ? 'text' : 'password'}
+										name="password"
+										value={loginData.password}
+										onChange={handleLoginChange}
+										className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+										placeholder="Enter your password...."
+									/>
 									<button
 										type="button"
-										className="text-gray-400 hover:text-gray-600"
+										onClick={() => setShowPassword(!showPassword)}
+										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
 									>
-										Forgot Password?
+										{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
 									</button>
 								</div>
+							</div>
 
-								{/* Login Button */}
+							{/* Remember Me & Forgot Password */}
+							<button
+								type="button"
+								className="text-gray-400 hover:text-gray-600 text-sm"
+							>
+								Forgot Password?
+							</button>
+
+							{/* Login Button */}
+							<button
+								type="submit"
+								disabled={loading}
+								className="w-full bg-cyan-400 text-white py-3 px-4 rounded-lg hover:bg-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+							>
+								{loading ? (
+									<div className="flex items-center justify-center">
+										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+										Signing In...
+									</div>
+								) : (
+									'Login'
+								)}
+							</button>
+
+							{/* Register Link */}
+							<div className="text-center text-sm">
+								<span className="text-gray-500">Don't have an account? </span>
 								<button
-									type="submit"
-									disabled={loading}
-									className="w-full bg-cyan-400 text-white py-3 px-4 rounded-lg hover:bg-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+									type="button"
+									onClick={() => switchMode('register')}
+									className="text-orange-400 hover:text-orange-500 font-medium"
 								>
-									{loading ? (
-										<div className="flex items-center justify-center">
-											<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-											Signing In...
-										</div>
-									) : (
-										'Login'
-									)}
+									Register here
 								</button>
-
-								{/* Register Link */}
-								<div className="text-center text-sm">
-									<span className="text-gray-500">Don't have an account? </span>
-									<button
-										type="button"
-										onClick={() => switchMode('register')}
-										className="text-orange-400 hover:text-orange-500 font-medium"
-									>
-										Register here
-									</button>
-								</div>
-							</>
-						) : (
-							// Register Form
-							<>
+							</div>
+						</div>
+					) : (
+						// Register Form
+						<div>
+							<div className='px-6 w-full max-w-md max-h-[60vh] overflow-y-auto space-y-4'>
 								{/* Profile Picture Preview */}
 								<div className="flex justify-center mb-6">
 									<div className="relative">
@@ -409,7 +401,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 								</div>
 
 								{/* Name Fields */}
-								<div className="grid grid-cols-2 gap-4">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div className="space-y-2">
 										<label className="block text-sm font-medium text-gray-700">
 											First Name
@@ -534,7 +526,8 @@ const AuthModal = ({ isOpen, onClose }) => {
 										<option value="other">Other</option>
 									</select>
 								</div>
-
+							</div>
+							<div className='space-y-4 p-6'>
 								{/* Register Button */}
 								<button
 									type="submit"
@@ -562,10 +555,10 @@ const AuthModal = ({ isOpen, onClose }) => {
 										Login here
 									</button>
 								</div>
-							</>
-						)}
-					</form>
-				</div>
+							</div>
+						</div>
+					)}
+				</form>
 			</div>
 		</div>
 	);
