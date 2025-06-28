@@ -1,8 +1,11 @@
 import React from 'react'
+import WritersHome from '../components/Admin/WritersHome'
 
 const AdminHome = () => {
 	return (
-		<div>AdminHome</div>
+		<>
+			<WritersHome />
+		</>
 	)
 }
 
