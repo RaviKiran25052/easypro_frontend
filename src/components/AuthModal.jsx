@@ -181,7 +181,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 					handleClose();
 				}, 1500);
 			} else {
-				toast.error(result.message || 'Login failed');
+				toast.warning(result.message || 'Login failed');
 			}
 		} catch (error) {
 			console.error('Login error:', error);

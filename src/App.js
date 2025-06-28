@@ -11,6 +11,7 @@ import Reviews from './pages/Reviews';
 import Faqs from './pages/Faqs';
 import ContactUs from './pages/ContactUs';
 import AdminHome from './pages/AdminHome';
+import OrderFlow from './pages/OrderFlow';
 
 const App = () => {
   return (
@@ -22,7 +23,8 @@ const App = () => {
         <Route path="/user/orders" element={<MyOrders />} />
         <Route path="/howitworks" element={<HowItWorks />} />
         <Route path="/top-writers" element={<TopWriters />} />
-        <Route path="/order" element={<PlaceOrder />} />
+        {/* <Route path="/order" element={<PlaceOrder />} /> */}
+        <Route path="/order" element={<OrderFlow />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/contactus" element={<ContactUs />} />

@@ -16,11 +16,20 @@ const NavBar = () => {
 		{
 			label: "Services", links: [
 				{ label: 'Essay Writing', link: "/" },
-				{ label: 'Research Papers', link: "/" },
+				{ label: 'Plagiarism Checker', link: "/" },
+				{ label: 'Paraphrasing', link: "/" },
 				{ label: 'Thesis Writing', link: "/" },
-				{ label: 'Editing & Proofreading', link: "/" },
-				{ label: 'About Us', link: "/" },
+				{ label: 'Powerpoint Presentation', link: "/" },
+				{ label: 'Homework', link: "/" },
 				{ label: 'Assignment Help', link: "/" }
+			]
+		},
+		{
+			label: "Resources", links: [
+				{ label: 'Thesis Writings', link: "/" },
+				{ label: 'Essay Writings', link: "/" },
+				{ label: 'Study Notes', link: "/" },
+				{ label: 'Documents', link: "/" }
 			]
 		},
 		{ label: "How it works", link: "/howitworks" },
@@ -40,11 +49,20 @@ const NavBar = () => {
 		{
 			label: "Services", links: [
 				{ label: 'Essay Writing', link: "/" },
-				{ label: 'Research Papers', link: "/" },
+				{ label: 'Plagiarism Checker', link: "/" },
+				{ label: 'Paraphrasing', link: "/" },
 				{ label: 'Thesis Writing', link: "/" },
-				{ label: 'Editing & Proofreading', link: "/" },
-				{ label: 'About Us', link: "/" },
+				{ label: 'Powerpoint Presentation', link: "/" },
+				{ label: 'Homework', link: "/" },
 				{ label: 'Assignment Help', link: "/" }
+			]
+		},
+		{
+			label: "Resources", links: [
+				{ label: 'Thesis Writings', link: "/" },
+				{ label: 'Essay Writings', link: "/" },
+				{ label: 'Study Notes', link: "/" },
+				{ label: 'Documents', link: "/" }
 			]
 		},
 		{ label: "Place Order", link: "/order" }
@@ -279,7 +297,7 @@ const NavBar = () => {
 			<div className={`fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
 				}`}>
 				<div
-					className={`fixed top-0 right-0 h-full w-80 bg-white transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+					className={`fixed top-0 right-0 h-full w-full bg-white transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
 						}`}
 				>
 					{/* Mobile Menu Header */}
