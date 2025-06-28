@@ -1,6 +1,8 @@
-import { PenTool, Edit3, Code } from 'lucide-react';
+import { PenTool, Edit3, Code, ChevronLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const OrderTypeSelection = ({ updateOrderData, onNext }) => {
+	const navigate = useNavigate();
 	const orderTypes = [
 		{
 			type: 'writing',
@@ -48,8 +50,14 @@ const OrderTypeSelection = ({ updateOrderData, onNext }) => {
 
 	return (
 		<div className="space-y-6">
-			<div className="text-center">
-				<h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Order Type</h2>
+			<div className="text-center relative">
+				<button
+					onClick={() => navigate(-1)}
+					className="absolute left-0 top-0 flex items-center py-2 px-3 pl-0 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors shadow-md"
+				>
+					<ChevronLeft className='h-4' /> Back
+				</button>
+				<h2 className="text-xl md:text-2xl font-bold text-gray-900 pt-12 md:pt-0 mb-2">Choose Your Order Type</h2>
 				<p className="text-gray-600">Select the type of service you need</p>
 			</div>
 
