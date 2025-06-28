@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, PenTool, Edit3, Code, Upload, Presentation, Star, Plus, Minus } from 'lucide-react';
 
-
 const getDaysRemaining = (deadline) => {
 	if (!deadline) return 0;
 	const deadlineDate = new Date(deadline);
