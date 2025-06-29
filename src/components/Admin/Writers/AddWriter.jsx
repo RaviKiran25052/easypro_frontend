@@ -10,7 +10,7 @@ import {
 	Code
 } from 'lucide-react';
 
-const AddWriter = ({ isOpen, onClose, onSubmit, writer, setWriter }) => {
+const AddWriter = ({ isOpen, onClose, onSubmit, writer, setWriter, submitting }) => {
 	const [profilePicPreview, setProfilePicPreview] = useState('');
 
 	const handleInputChange = (e) => {
@@ -422,10 +422,20 @@ const AddWriter = ({ isOpen, onClose, onSubmit, writer, setWriter }) => {
 									<button
 										type="button"
 										onClick={onSubmit}
-										className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
+										disabled={submitting}
+										className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${submitting ? 'cursor-not-allowed opacity-50' : ''}`}
 									>
-										<Save className="w-4 h-4" />
-										Save Writer
+										{submitting ? (
+											<div className="flex items-center gap-2">
+												<span className="w-4 h-4 border-2 border-x-gray-500 border-white rounded-full animate-spin"/>
+												Saving...
+											</div>
+										) : (
+											<>
+												<Save className="w-5 h-5" />
+												Save Writer
+											</>
+										)}
 									</button>
 									<button
 										type="button"

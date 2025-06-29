@@ -82,7 +82,7 @@ const NavBar = () => {
 	};
 
 	useEffect(() => {
-		const storedUser = JSON.parse(localStorage.getItem('user'));
+		const storedUser = JSON.parse(localStorage.getItem('userInfo'));
 		const token = localStorage.getItem('token');
 		if (storedUser && token) {
 			if (storedUser.role === "admin") {

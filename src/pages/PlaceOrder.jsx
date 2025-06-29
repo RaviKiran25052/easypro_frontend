@@ -68,7 +68,7 @@ const PlaceOrder = () => {
 		try {
 			// In a real app, you would fetch writers from your API
 			const response = await axios.get(`${API_URL}/writers`, {
-				params: { subject },
+				params: { subject, deadline },
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				}

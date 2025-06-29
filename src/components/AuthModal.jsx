@@ -170,7 +170,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 				// Store token if needed
 				if (result.data.token) {
 					localStorage.setItem('token', result.data.token);
-					localStorage.setItem('user', JSON.stringify(result.data.user));
+					localStorage.setItem('userInfo', JSON.stringify(result.data.user));
 				}
 
 				// Reset form
@@ -219,7 +219,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 				// Store token if needed
 				if (result.data.token) {
 					localStorage.setItem('token', result.data.token);
-					localStorage.setItem('user', JSON.stringify(result.data.user));
+					localStorage.setItem('userInfo', JSON.stringify(result.data.user));
 				}
 
 				// Reset form
