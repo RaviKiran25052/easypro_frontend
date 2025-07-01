@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import OrderTypeSelection from '../components/Orders/OrderTypeSelection';
 import WritingOrderFlow from '../components/Orders/WritingOrderFlow';
@@ -64,35 +64,6 @@ const PlaceOrder = () => {
 		updateOrderData({ deadline: getDefaultDeadline(days) });
 	};
 
-	const fetchWriters = async (subject, deadline) => {
-		try {
-			// In a real app, you would fetch writers from your API
-			const response = await axios.get(`${API_URL}/writers`, {
-				params: { subject, deadline },
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('token')}`
-				}
-			});
-			updateOrderData({ availableWriters: response.data });
-		} catch (error) {
-			console.error('Error fetching writers:', error);
-			// Fallback to mock data if API fails
-			const mockWriters = [
-				{
-					id: 1,
-					name: "Dr. Sarah Chen",
-					rating: 4.9,
-					completedOrders: 287,
-					expertise: ["Python", "Data Analysis", "Machine Learning"],
-					price: 45,
-					avatar: "SC"
-				},
-				// ... other mock writers
-			];
-			updateOrderData({ availableWriters: mockWriters });
-		}
-	};
-
 	const submitOrder = async () => {
 		setIsSubmitting(true);
 
@@ -149,18 +120,15 @@ const PlaceOrder = () => {
 					? (data.software === 'Other' ? data.otherSoftware : data.software)
 					: 'Not applicable';
 				formData.append('software', software);
-				if (data.selectedWriter?.id) formData.append('writerId', data.selectedWriter.id);
+				if (data.selectedWriter?._id) formData.append('selectedWriter', data.selectedWriter._id);
+				break;
+
+			default:
 				break;
 		}
 
 		return formData;
 	};
-
-	useEffect(() => {
-		if (orderData.type === 'technical' && currentStep === 2 && orderData.deadline && orderData.subject) {
-			fetchWriters(orderData.subject, orderData.deadline);
-		}
-	}, [orderData.type, currentStep, orderData.deadline, orderData.subject]);
 
 	const renderOrderFlow = () => {
 		if (!orderData.type || currentStep === 0) {

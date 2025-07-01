@@ -11,6 +11,7 @@ import Reviews from './pages/Reviews';
 import Faqs from './pages/Faqs';
 import ContactUs from './pages/ContactUs';
 import AdminHome from './pages/AdminHome';
+import OrderDetails from './pages/OrderDetails';
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/user" element={<Profile />} />
         <Route path="/user/orders" element={<MyOrders />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/howitworks" element={<HowItWorks />} />
         <Route path="/top-writers" element={<TopWriters />} />
         <Route path="/order" element={<PlaceOrder />} />

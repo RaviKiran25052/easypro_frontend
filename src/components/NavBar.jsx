@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, LogOut, Menu, User, X } from 'lucide-react';
 import AuthModal from './AuthModal';
 import LogoutModal from './LogoutModal';
+import { useNavigate } from 'react-router-dom';
 
 const NavBar = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +12,7 @@ const NavBar = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [user, setUser] = useState(null);
+	const navigate = useNavigate();
 
 	const navLinks = [
 		{
@@ -127,7 +129,7 @@ const NavBar = () => {
 						}`}>
 						<div className="flex items-center justify-between">
 							{/* Logo */}
-							<img src="/logoBlack.png" className='w-28 md:w-40' alt="logo" />
+							<img src="/logoBlack.png" onClick={() => navigate('/')} className='w-28 md:w-40 cursor-pointer' alt="logo" />
 
 							{/* Desktop Navigation Links */}
 							<div className="hidden md:flex items-center space-x-8">

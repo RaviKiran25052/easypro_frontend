@@ -1,7 +1,10 @@
 import { ChevronLeft, ChevronRight, Code, Upload, Star } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const TechnicalOrderFlow = ({
 	currentStep,
@@ -15,6 +18,9 @@ const TechnicalOrderFlow = ({
 	submitOrder,
 	isSubmitting
 }) => {
+	const [availableWriters, setAvailableWriters] = useState([]);
+	const [isLoadingWriters, setIsLoadingWriters] = useState(false);
+
 	const navigate = useNavigate();
 	const subjects = [
 		'Mathematics', 'Statistics', 'Physics', 'Chemistry', 'Biology',
@@ -26,6 +32,37 @@ const TechnicalOrderFlow = ({
 		'Not applicable', 'Python', 'R', 'MATLAB', 'Excel', 'SPSS', 'SAS', 'Stata', 'Java',
 		'C++', 'JavaScript', 'SQL', 'Tableau', 'Power BI', 'AutoCAD', 'Other'
 	];
+
+	const fetchWriters = async (subject, deadline) => {
+		try {
+			setIsLoadingWriters(true);
+			const response = await axios.get(`${API_URL}/writer`, {
+				params: { subject, deadline },
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token')}`
+				}
+			});
+			setAvailableWriters(response.data.data);
+			console.log('Available writers:', response.data);
+
+		} catch (error) {
+			console.error('Error fetching writers:', error);
+			setAvailableWriters([]);
+			toast.error('Failed to load writers. Please try again.');
+		} finally {
+			setIsLoadingWriters(false);
+		}
+	};
+
+	useEffect(() => {
+		if (currentStep === 2 && orderData.deadline && orderData.subject) {
+			if (orderData.subject === 'Other' && orderData.otherSubject) {
+				fetchWriters(orderData.otherSubject, orderData.deadline);
+			} else {
+				fetchWriters(orderData.subject, orderData.deadline);
+			}
+		}
+	}, [currentStep, orderData.deadline, orderData.subject, orderData.otherSubject]);
 
 	const handleSubjectChange = (e) => {
 		const value = e.target.value;
@@ -269,53 +306,62 @@ const TechnicalOrderFlow = ({
 
 						<div className="space-y-4">
 							<h3 className="font-medium text-gray-900">Available Writers</h3>
-							{orderData.availableWriters.length > 0 ? (
-								orderData.availableWriters.map((writer) => (
-									<div
-										key={writer.id}
-										className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${orderData.selectedWriter?.id === writer.id
-											? 'border-purple-500 bg-purple-50'
-											: 'border-gray-200 hover:border-gray-300'
-											}`}
-										onClick={() => updateOrderData({ selectedWriter: writer })}
-									>
-										<div className="flex items-center justify-between">
-											<div className="flex items-center space-x-4">
-												<div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center font-semibold">
-													{writer.avatar}
-												</div>
-												<div>
-													<h3 className="font-semibold text-gray-900">{writer.name}</h3>
-													<div className="flex items-center space-x-2 text-sm text-gray-600">
-														<div className="flex items-center">
-															<Star size={14} className="text-yellow-400 fill-current" />
-															<span className="ml-1">{writer.rating}</span>
+
+							{isLoadingWriters ? (
+								<div className="text-center py-8 text-gray-500">
+									<div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+									<p className="mt-2">Loading available writers...</p>
+								</div>
+							) : availableWriters.length > 0 ? (
+								<div className="space-y-3">
+									{availableWriters.map((writer) => (
+										<div
+											key={writer._id}
+											className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${orderData.selectedWriter?._id === writer._id
+												? 'border-purple-500 bg-purple-50'
+												: 'border-gray-200 hover:border-gray-300'
+												}`}
+											onClick={() => updateOrderData({ selectedWriter: writer })}
+										>
+											<div className="flex items-center justify-between">
+												<div className="flex items-center space-x-4">
+													<img
+														src={writer.profilePic}
+														className='w-12 h-12 rounded-full object-cover'
+														alt="Writer profile"
+													/>
+													<div>
+														<h3 className="font-semibold text-gray-900">{writer.fullName}</h3>
+														<div className="flex items-center space-x-2 text-sm text-gray-600">
+															<div className="flex items-center">
+																<Star size={14} className="text-yellow-400 fill-current" />
+																<span className="ml-1">{writer.rating > 0 ? writer.rating.toFixed(1) : 'New'}</span>
+															</div>
+															<span>•</span>
+															<span>{writer.maxOrders} max orders</span>
 														</div>
-														<span>•</span>
-														<span>{writer.completedOrders} orders</span>
-													</div>
-													<div className="flex flex-wrap gap-1 mt-1">
-														{writer.expertise.map((skill, index) => (
-															<span
-																key={index}
-																className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
-															>
-																{skill}
-															</span>
-														))}
+														{writer.skills && writer.skills.length > 0 && (
+															<div className="flex flex-wrap gap-1 mt-2">
+																{writer.skills.slice(0, 3).map((skillObj, index) => (
+																	<span
+																		key={index}
+																		className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
+																	>
+																		{skillObj.skill}
+																	</span>
+																))}
+															</div>
+														)}
 													</div>
 												</div>
-											</div>
-											<div className="text-right">
-												<div className="text-lg font-semibold text-gray-900">${writer.price}</div>
-												<div className="text-sm text-gray-500">per hour</div>
 											</div>
 										</div>
-									</div>
-								))
+									))}
+								</div>
 							) : (
 								<div className="text-center py-8 text-gray-500">
-									Loading available writers...
+									<p>No writers available for the selected criteria.</p>
+									<p className="text-sm mt-1">Try adjusting your deadline or subject.</p>
 								</div>
 							)}
 						</div>
@@ -367,7 +413,7 @@ const TechnicalOrderFlow = ({
 									)}
 									<div className="flex justify-between">
 										<span className="text-gray-600">Assigned Writer:</span>
-										<span className="font-medium">{orderData.selectedWriter?.name}</span>
+										<span className="font-medium">{orderData.selectedWriter?.fullName}</span>
 									</div>
 									<div className="flex justify-between">
 										<span className="text-gray-600">Deadline:</span>

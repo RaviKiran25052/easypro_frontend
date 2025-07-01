@@ -23,7 +23,6 @@ const WritersHome = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [submitting, setSubmitting] = useState(false);
-	const [selectedWriter, setSelectedWriter] = useState(null);
 	const [formData, setFormData] = useState({
 		fullName: '',
 		email: '',
