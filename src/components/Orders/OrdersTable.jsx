@@ -110,12 +110,23 @@ const OrdersTable = () => {
 		}
 	};
 
-	const formatDate = (date) => {
-		return new Date(date).toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
+	const formatDate = (deadline) => {
+		const istOffset = 5.5 * 60; // IST is UTC+5:30
+		const dateUTC = new Date(deadline);
+		const istDate = new Date(dateUTC.getTime() + istOffset * 60000);
+
+		const day = String(istDate.getDate()).padStart(2, '0');
+		const month = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+		const year = istDate.getFullYear();
+
+		let hours = istDate.getHours();
+		const minutes = String(istDate.getMinutes()).padStart(2, '0');
+		const ampm = hours >= 12 ? 'PM' : 'AM';
+
+		hours = hours % 12 || 12; // Convert to 12-hour format
+		const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+
+		return `${day}/${month}/${year}, ${formattedTime}`;
 	};
 
 	const handleCancelOrder = async () => {
@@ -344,7 +355,7 @@ const OrdersTable = () => {
 	}
 
 	return (
-		<div className="w-full max-w-7xl mx-auto p-4">
+		<div className="w-full max-w-7xl mx-auto p-4 md:px-20">
 			<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 				<div className="px-6 py-4 border-b border-gray-200">
 					<h2 className="text-xl font-semibold text-gray-900">My Orders</h2>
@@ -354,19 +365,19 @@ const OrdersTable = () => {
 					<table className="w-full">
 						<thead className="bg-gray-50">
 							<tr>
-								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
 									Order Details
 								</th>
-								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
 									Status
 								</th>
-								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
 									Deadline
 								</th>
-								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
 									Writer
 								</th>
-								<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+								<th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
 									Actions
 								</th>
 							</tr>
@@ -387,13 +398,13 @@ const OrdersTable = () => {
 											</div>
 										</div>
 									</td>
-									<td className="px-6 py-4">
+									<td className="px-6 py-4 text-center">
 										<span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status.state)}`}>
 											{getStatusIcon(order.status.state)}
 											{order.status.state}
 										</span>
 									</td>
-									<td className="px-6 py-4">
+									<td className="px-6 py-4 text-center">
 										<div className="flex items-center gap-1 text-sm text-gray-900">
 											<Calendar className="w-4 h-4 text-gray-400" />
 											{formatDate(order.deadline)}
