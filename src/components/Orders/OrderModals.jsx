@@ -1,22 +1,58 @@
-import React, { useState } from 'react';
-import { Star, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, Plus, Trash2, User } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const OrderModals = ({
 	modalState,
 	setModalState,
 	selectedOrder,
 	setSelectedOrder,
-	newDeadline,
-	setNewDeadline,
+	newData,
+	setNewData,
 	reviewData,
 	setReviewData,
 	handleCancelOrder,
 	handleSubmitReview,
-	handleRepeatOrder,
-	handleRevokeOrder
+	handleOrderAction
 }) => {
 	const [cancelReason, setCancelReason] = useState('');
 	const [newCustomFieldName, setNewCustomFieldName] = useState('');
+	const [availableWriters, setAvailableWriters] = useState([]);
+	const [loading, setLoading] = useState(false);
+
+	const fetchWriters = async (subject, deadline) => {
+		try {
+			setLoading(true);
+			const response = await axios.get(`${API_URL}/writer`, {
+				params: { subject, deadline },
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('token')}`
+				}
+			});
+			setAvailableWriters(response.data.data);
+			console.log('Available writers:', response.data);
+
+		} catch (error) {
+			console.error('Error fetching writers:', error);
+			setAvailableWriters([]);
+			toast.error('Failed to load writers. Please try again.');
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	// Fetch writers when deadline changes for technical orders
+	useEffect(() => {
+		if ((modalState.showRepeatOrder || modalState.showRevokeOrder) &&
+			selectedOrder &&
+			selectedOrder.type === 'technical' &&
+			newData.deadline) {
+			fetchWriters(selectedOrder.subject, newData.deadline);
+		}
+	}, [newData.deadline, modalState.showRepeatOrder, modalState.showRevokeOrder, selectedOrder]);
 
 	const handleRatingChange = (field, value) => {
 		setReviewData({
@@ -84,6 +120,33 @@ const OrderModals = ({
 		);
 
 		return mainRatingsValid && customRatingsValid;
+	};
+
+	const handleOrderActionClick = () => {
+		handleOrderAction();
+	};
+
+	const handleWriterSelect = (writerId) => {
+		setNewData({ ...newData, writer: writerId });
+	};
+
+	const closeOrderModal = () => {
+		const newModalState = { ...modalState };
+		if (modalState.showRepeatOrder) {
+			newModalState.showRepeatOrder = false;
+		} else if (modalState.showRevokeOrder) {
+			newModalState.showRevokeOrder = false;
+		}
+		setModalState(newModalState);
+		setSelectedOrder(null);
+		setNewData({ deadline: '', writer: '', status: { state: '' } });
+		setAvailableWriters([]);
+	};
+
+	const isOrderActionValid = () => {
+		if (!newData.deadline) return false;
+		if (selectedOrder?.type === 'technical' && !newData.writer) return false;
+		return true;
 	};
 
 	return (
@@ -298,78 +361,136 @@ const OrderModals = ({
 				</div>
 			)}
 
-			{/* Repeat Order Modal */}
-			{modalState.showRepeatOrder && (
+			{/* Combined Repeat/Revoke Order Modal */}
+			{(modalState.showRepeatOrder || modalState.showRevokeOrder) && selectedOrder && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-						<h3 className="text-lg font-semibold text-gray-900 mb-4">Repeat Order</h3>
+					<div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+						<h3 className="text-lg font-semibold text-gray-900 mb-4">
+							{modalState.showRepeatOrder ? 'Repeat Order' : 'Revoke Order'}
+						</h3>
 						<div className="space-y-4">
 							<div>
 								<label className="text-sm font-medium text-gray-700 mb-2 block">New Deadline</label>
 								<input
 									type="datetime-local"
-									value={newDeadline}
-									onChange={(e) => setNewDeadline(e.target.value)}
+									value={newData.deadline}
+									onChange={(e) => setNewData({ ...newData, deadline: e.target.value })}
 									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 								/>
 							</div>
-						</div>
-						<div className="flex gap-3 justify-end mt-6">
-							<button
-								onClick={() => {
-									setModalState({ ...modalState, showRepeatOrder: false });
-									setSelectedOrder(null);
-									setNewDeadline('');
-								}}
-								className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-							>
-								Cancel
-							</button>
-							<button
-								onClick={handleRepeatOrder}
-								disabled={!newDeadline}
-								className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								Repeat Order
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
 
-			{/* Revoke Order Modal */}
-			{modalState.showRevokeOrder && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-						<h3 className="text-lg font-semibold text-gray-900 mb-4">Revoke Order</h3>
-						<div className="space-y-4">
-							<div>
-								<label className="text-sm font-medium text-gray-700 mb-2 block">New Deadline</label>
-								<input
-									type="datetime-local"
-									value={newDeadline}
-									onChange={(e) => setNewDeadline(e.target.value)}
-									className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-								/>
-							</div>
+							{/* Writer Selection - Only for technical orders */}
+							{selectedOrder.type === 'technical' && (
+								<div>
+									<label className="text-sm font-medium text-gray-700 mb-2 block">
+										Select Writer
+									</label>
+									{loading ? (
+										<div className="w-full px-3 py-8 border border-gray-300 rounded-md bg-gray-50 text-gray-500 text-center">
+											Loading writers...
+										</div>
+									) : availableWriters.length > 0 ? (
+										<div className="max-h-64 overflow-y-auto border border-gray-300 rounded-md p-3 bg-gray-50">
+											<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+												{availableWriters.map((writer) => (
+													<div
+														key={writer._id}
+														onClick={() => handleWriterSelect(writer._id)}
+														className={`p-4 border rounded-lg cursor-pointer transition-all ${newData.writer === writer._id
+																? 'border-blue-500 bg-blue-50 shadow-md'
+																: 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm'
+															}`}
+													>
+														<div className="flex items-start gap-3">
+															<img
+																src={writer.profilePic}
+																alt={writer.fullName}
+																className="w-12 h-12 rounded-full object-cover"
+															/>
+															<div className="flex-1 min-w-0">
+																<h4 className="font-semibold text-gray-900 truncate">
+																	{writer.fullName}
+																</h4>
+																<p className="text-sm text-gray-600 truncate">
+																	{writer.email}
+																</p>
+																<div className="flex items-center gap-1 mt-1">
+																	<Star className="w-4 h-4 text-yellow-400 fill-current" />
+																	<span className="text-sm text-gray-600">
+																		{writer.rating || 0}/5
+																	</span>
+																</div>
+															</div>
+														</div>
+														{writer.bio && (
+															<p className="text-sm text-gray-600 mt-2 line-clamp-2">
+																{writer.bio}
+															</p>
+														)}
+														{writer.skills && writer.skills.length > 0 && (
+															<div className="mt-2">
+																<div className="flex flex-wrap gap-1">
+																	{writer.skills.slice(0, 3).map((skill, index) => (
+																		<span
+																			key={index}
+																			className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+																		>
+																			{skill.skill}
+																		</span>
+																	))}
+																	{writer.skills.length > 3 && (
+																		<span className="text-xs text-gray-500">
+																			+{writer.skills.length - 3} more
+																		</span>
+																	)}
+																</div>
+															</div>
+														)}
+														{writer.education && writer.education.length > 0 && (
+															<div className="mt-2">
+																<p className="text-xs text-gray-500">
+																	{writer.education[0].qualification} from {writer.education[0].place}
+																</p>
+															</div>
+														)}
+														{writer.availableOn && (
+															<div className="mt-2">
+																<p className="text-xs text-green-600">
+																	Available from: {new Date(writer.availableOn).toLocaleDateString()}
+																</p>
+															</div>
+														)}
+													</div>
+												))}
+											</div>
+										</div>
+									) : (
+										<div className="w-full px-3 py-8 border border-gray-300 rounded-md bg-gray-50 text-gray-500 text-center">
+											{!newData.deadline
+												? 'Please select a deadline first to load available writers'
+												: 'No writers available for the selected deadline and subject'
+											}
+										</div>
+									)}
+								</div>
+							)}
 						</div>
 						<div className="flex gap-3 justify-end mt-6">
 							<button
-								onClick={() => {
-									setModalState({ ...modalState, showRevokeOrder: false });
-									setSelectedOrder(null);
-									setNewDeadline('');
-								}}
+								onClick={closeOrderModal}
 								className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
 							>
 								Cancel
 							</button>
 							<button
-								onClick={handleRevokeOrder}
-								disabled={!newDeadline}
-								className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+								onClick={handleOrderActionClick}
+								disabled={!isOrderActionValid()}
+								className={`px-4 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed ${modalState.showRepeatOrder
+										? 'bg-blue-600 hover:bg-blue-700'
+										: 'bg-orange-600 hover:bg-orange-700'
+									}`}
 							>
-								Revoke Order
+								{modalState.showRepeatOrder ? 'Repeat Order' : 'Revoke Order'}
 							</button>
 						</div>
 					</div>

@@ -80,6 +80,7 @@ const NavBar = () => {
 		setIsLogoutModalOpen(false);
 		localStorage.removeItem('token');
 		localStorage.removeItem('userInfo');
+		navigate('/');
 	};
 
 	useEffect(() => {

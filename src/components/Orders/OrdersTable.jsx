@@ -51,7 +51,11 @@ const OrdersTable = () => {
 		writer: '',
 		order: ''
 	});
-	const [newDeadline, setNewDeadline] = useState('');
+	const [newData, setNewData] = useState({
+		deadline: '',
+		writer: '',
+		status: { state: '' }
+	});
 
 	useEffect(() => {
 		fetchOrders();
@@ -109,7 +113,7 @@ const OrdersTable = () => {
 				return 'bg-gray-100 text-gray-800';
 		}
 	};
-	
+
 	const formatDate = (deadline) => {
 		const dateUTC = new Date(deadline);
 
@@ -188,11 +192,22 @@ const OrdersTable = () => {
 		}
 	};
 
-	const handleRepeatOrder = async () => {		
+	const handleOrderAction = async () => {
 		try {
+			let payload = { deadline: newData.deadline };
+
+			// For technical orders, include writer and set status to pending
+			if (selectedOrder.type === 'technical') {
+				payload.writer = newData.writer;
+				payload.status = { state: 'pending' };
+			} else {
+				// For writing and editing orders, set status to unassigned
+				payload.status = { state: 'unassigned' };
+			}
+
 			const response = await axios.patch(
 				`${API_URL}/order/${selectedOrder._id}`,
-				{ deadline: newDeadline },
+				payload,
 				{
 					headers: {
 						'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -201,36 +216,20 @@ const OrdersTable = () => {
 			);
 
 			if (response.data.success) {
-				setModalState({ ...modalState, showRepeatOrder: false });
-				setSelectedOrder(null);
-				setNewDeadline('');
-				fetchOrders();
-			}
-		} catch (err) {
-			console.error('Error repeating order:', err);
-		}
-	};
-
-	const handleRevokeOrder = async () => {
-		try {
-			const response = await axios.patch(
-				`${API_URL}/order/${selectedOrder._id}`,
-				{ status: { state: 'unassigned' }, deadline: newDeadline },
-				{
-					headers: {
-						'Authorization': `Bearer ${localStorage.getItem('token')}`
-					}
+				// Close the appropriate modal
+				const newModalState = { ...modalState };
+				if (modalState.showRepeatOrder) {
+					newModalState.showRepeatOrder = false;
+				} else if (modalState.showRevokeOrder) {
+					newModalState.showRevokeOrder = false;
 				}
-			);
-
-			if (response.data.success) {
-				setModalState({ ...modalState, showRevokeOrder: false });
+				setModalState(newModalState);
 				setSelectedOrder(null);
-				setNewDeadline('');
+				setNewData({ deadline: '', writer: '', status: { state: '' } });
 				fetchOrders();
 			}
 		} catch (err) {
-			console.error('Error revoking order:', err);
+			console.error('Error processing order:', err);
 		}
 	};
 
@@ -458,14 +457,13 @@ const OrdersTable = () => {
 				setModalState={setModalState}
 				selectedOrder={selectedOrder}
 				setSelectedOrder={setSelectedOrder}
-				newDeadline={newDeadline}
-				setNewDeadline={setNewDeadline}
+				newData={newData}
+				setNewData={setNewData}
 				reviewData={reviewData}
 				setReviewData={setReviewData}
 				handleCancelOrder={handleCancelOrder}
 				handleSubmitReview={handleSubmitReview}
-				handleRepeatOrder={handleRepeatOrder}
-				handleRevokeOrder={handleRevokeOrder}
+				handleOrderAction={handleOrderAction}
 			/>
 		</div>
 	);
