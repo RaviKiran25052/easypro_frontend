@@ -12,6 +12,9 @@ import Faqs from './pages/Faqs';
 import ContactUs from './pages/ContactUs';
 import AdminHome from './pages/AdminHome';
 import OrderDetails from './pages/OrderDetails';
+import Writers from './pages/Admin/Writers';
+import Users from './pages/Admin/Users';
+import Orders from './pages/Admin/Orders';
 
 const App = () => {
   return (
@@ -29,6 +32,9 @@ const App = () => {
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/contactus" element={<ContactUs />} />
         <Route path="/admin/home" element={<AdminHome />} />
+        <Route path="/admin/writers" element={<Writers />} />
+        <Route path="/admin/users" element={<Users />} />
+        <Route path="/admin/orders" element={<Orders />} />
       </Routes>
     </BrowserRouter>
   )
