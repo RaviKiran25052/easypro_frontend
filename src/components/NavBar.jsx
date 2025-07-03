@@ -79,7 +79,7 @@ const NavBar = () => {
 		setUser(null);
 		setIsLogoutModalOpen(false);
 		localStorage.removeItem('token');
-		localStorage.removeItem('user');
+		localStorage.removeItem('userInfo');
 	};
 
 	useEffect(() => {

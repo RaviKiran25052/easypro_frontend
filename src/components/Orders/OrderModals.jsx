@@ -68,8 +68,7 @@ const OrderModals = ({
 
 	const handleCancelWithReason = () => {
 		const payload = {
-			status: { state: 'cancelled' },
-			...(cancelReason && { cancellationReason: cancelReason })
+			status: { state: 'cancelled', reason: cancelReason }
 		};
 		handleCancelOrder(payload);
 	};

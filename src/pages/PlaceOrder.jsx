@@ -10,18 +10,11 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const getDaysRemaining = (deadline) => {
 	if (!deadline) return 0;
-
 	const deadlineDate = new Date(deadline);
-	const now = new Date();
-
-	// Add 5 hours and 30 minutes to both to convert to IST
-	deadlineDate.setMinutes(deadlineDate.getMinutes() + 330);
-	now.setMinutes(now.getMinutes() + 330);
-
-	const diffTime = deadlineDate - now;
+	const today = new Date();
+	const diffTime = deadlineDate - today;
 	return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
-
 
 const PlaceOrder = () => {
 	const [currentStep, setCurrentStep] = useState(0);
@@ -63,22 +56,19 @@ const PlaceOrder = () => {
 
 	const getDefaultDeadline = (days = 10) => {
 		const date = new Date();
-
-		// Add IST offset manually: 5 hours 30 minutes = 330 minutes
-		date.setMinutes(date.getMinutes() + 330);
-
-		// Add the desired number of days
 		date.setDate(date.getDate() + days);
 
-		// Format to "YYYY-MM-DDTHH:MM"
+		// Get local ISO string for datetime-local input
+		const pad = (n) => String(n).padStart(2, '0');
 		const yyyy = date.getFullYear();
-		const mm = String(date.getMonth() + 1).padStart(2, '0');
-		const dd = String(date.getDate()).padStart(2, '0');
-		const hh = String(date.getHours()).padStart(2, '0');
-		const min = String(date.getMinutes()).padStart(2, '0');
+		const mm = pad(date.getMonth() + 1); // Months start at 0
+		const dd = pad(date.getDate());
+		const hh = pad(date.getHours());
+		const min = pad(date.getMinutes());
 
 		return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 	};
+
 
 	const setQuickDeadline = (days) => {
 		updateOrderData({ deadline: getDefaultDeadline(days) });

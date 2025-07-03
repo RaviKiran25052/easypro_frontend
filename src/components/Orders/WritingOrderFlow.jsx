@@ -29,20 +29,6 @@ const WritingOrderFlow = ({
 		'Computer Science', 'Engineering', 'Medicine', 'Nursing', 'Law', 'Other'
 	];
 
-	const toISTDatetimeLocal = (utcDateStr) => {
-		const utcDate = new Date(utcDateStr);
-		const istOffset = 5.5 * 60 * 60000; // 5.5 hours in milliseconds
-		const istDate = new Date(utcDate.getTime() + istOffset);
-
-		const year = istDate.getFullYear();
-		const month = String(istDate.getMonth() + 1).padStart(2, '0');
-		const day = String(istDate.getDate()).padStart(2, '0');
-		const hours = String(istDate.getHours()).padStart(2, '0');
-		const minutes = String(istDate.getMinutes()).padStart(2, '0');
-
-		return `${year}-${month}-${day}T${hours}:${minutes}`;
-	};
-
 	const handleSubjectChange = (e) => {
 		const value = e.target.value;
 		updateOrderData({
@@ -321,7 +307,7 @@ const WritingOrderFlow = ({
 								<label className="block text-sm font-medium text-gray-700 mb-2">Deadline</label>
 								<input
 									type="datetime-local"
-									value={toISTDatetimeLocal(orderData.deadline)}
+									value={orderData.deadline}
 									onChange={(e) => updateOrderData({ deadline: e.target.value })}
 									className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 								/>
@@ -367,7 +353,7 @@ const WritingOrderFlow = ({
 								<div className="flex justify-between">
 									<span className="text-gray-600">Deadline:</span>
 									<span className="font-medium">
-										{new Date(toISTDatetimeLocal(orderData.deadline)).toLocaleString('en-GB', {
+										{new Date(orderData.deadline).toLocaleString('en-GB', {
 											day: '2-digit',
 											month: '2-digit',
 											year: 'numeric',

@@ -109,18 +109,16 @@ const OrdersTable = () => {
 				return 'bg-gray-100 text-gray-800';
 		}
 	};
-
+	
 	const formatDate = (deadline) => {
-		const istOffset = 5.5 * 60; // IST is UTC+5:30
 		const dateUTC = new Date(deadline);
-		const istDate = new Date(dateUTC.getTime() + istOffset * 60000);
 
-		const day = String(istDate.getDate()).padStart(2, '0');
-		const month = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-		const year = istDate.getFullYear();
+		const day = String(dateUTC.getDate()).padStart(2, '0');
+		const month = String(dateUTC.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+		const year = dateUTC.getFullYear();
 
-		let hours = istDate.getHours();
-		const minutes = String(istDate.getMinutes()).padStart(2, '0');
+		let hours = dateUTC.getHours();
+		const minutes = String(dateUTC.getMinutes()).padStart(2, '0');
 		const ampm = hours >= 12 ? 'PM' : 'AM';
 
 		hours = hours % 12 || 12; // Convert to 12-hour format
@@ -129,11 +127,11 @@ const OrdersTable = () => {
 		return `${day}/${month}/${year}, ${formattedTime}`;
 	};
 
-	const handleCancelOrder = async () => {
+	const handleCancelOrder = async (data) => {
 		try {
 			const response = await axios.patch(
 				`${API_URL}/order/${selectedOrder._id}`,
-				{ status: { state: 'cancelled' } },
+				data,
 				{
 					headers: {
 						'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -190,7 +188,7 @@ const OrdersTable = () => {
 		}
 	};
 
-	const handleRepeatOrder = async () => {
+	const handleRepeatOrder = async () => {		
 		try {
 			const response = await axios.patch(
 				`${API_URL}/order/${selectedOrder._id}`,
@@ -247,7 +245,7 @@ const OrdersTable = () => {
 							setSelectedOrder(order);
 							setModalState({ ...modalState, showConfirmCancel: true });
 						}}
-						className="flex items-center gap-1 px-3 py-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 					>
 						<X className="w-4 h-4" />
 						Cancel
@@ -256,13 +254,13 @@ const OrdersTable = () => {
 			case 'assigned':
 			case 'pending':
 				return (
-					<div className="flex gap-2">
+					<div className="flex gap-3 justify-center">
 						<button
 							onClick={() => {
 								setSelectedOrder(order);
 								setModalState({ ...modalState, showViewWriter: true });
 							}}
-							className="flex items-center gap-1 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 						>
 							<Eye className="w-4 h-4" />
 							View Writer
@@ -272,7 +270,7 @@ const OrdersTable = () => {
 								setSelectedOrder(order);
 								setModalState({ ...modalState, showConfirmCancel: true });
 							}}
-							className="flex items-center gap-1 px-3 py-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 						>
 							<X className="w-4 h-4" />
 							Cancel
@@ -287,8 +285,9 @@ const OrdersTable = () => {
 							setModalState({ ...modalState, showReview: true });
 							setReviewData(order?.review);
 						}}
-						className="flex items-center gap-1 px-3 py-1 text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors"
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 hover:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 					>
+						<Eye className="w-4 h-4" />
 						View Review
 					</button>
 					:
@@ -297,7 +296,7 @@ const OrdersTable = () => {
 							setSelectedOrder(order);
 							setModalState({ ...modalState, showReview: true });
 						}}
-						className="flex items-center gap-1 px-3 py-1 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 					>
 						<Star className="w-4 h-4" />
 						Leave Review
@@ -310,7 +309,7 @@ const OrdersTable = () => {
 							setSelectedOrder(order);
 							setModalState({ ...modalState, showRepeatOrder: true });
 						}}
-						className="flex items-center gap-1 px-3 py-1 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 					>
 						<RotateCcw className="w-4 h-4" />
 						Repeat Order
@@ -323,7 +322,7 @@ const OrdersTable = () => {
 							setSelectedOrder(order);
 							setModalState({ ...modalState, showRevokeOrder: true });
 						}}
-						className="flex items-center gap-1 px-3 py-1 text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
+						className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 hover:border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
 					>
 						<RefreshCw className="w-4 h-4" />
 						Revoke Order
@@ -420,7 +419,7 @@ const OrdersTable = () => {
 											<span className="text-sm text-gray-400">Not assigned</span>
 										)}
 									</td>
-									<td className="px-6 py-4">
+									<td className="px-6 py-4 text-center">
 										{renderActions(order)}
 									</td>
 								</tr>
