@@ -1,3 +1,22 @@
+import { Eye, FileText } from "lucide-react";
+
+const formatDate = (deadline) => {
+	const dateUTC = new Date(deadline);
+
+	const day = String(dateUTC.getDate()).padStart(2, '0');
+	const month = String(dateUTC.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+	const year = dateUTC.getFullYear();
+
+	let hours = dateUTC.getHours();
+	const minutes = String(dateUTC.getMinutes()).padStart(2, '0');
+	const ampm = hours >= 12 ? 'PM' : 'AM';
+
+	hours = hours % 12 || 12; // Convert to 12-hour format
+	const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+
+	return `${day}/${month}/${year}, ${formattedTime}`;
+};
+
 // Assign Writer Modal
 export const AssignWriterModal = ({ isOpen, onClose, order, writers, onAssign }) => {
 	if (!isOpen) return null;
@@ -171,6 +190,68 @@ export const ViewReasonModal = ({ isOpen, onClose, reason }) => {
 						className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
 					>
 						Close
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+// Response Summary Modal
+export const ResponseSummaryModal = ({ isOpen, onClose, responses, onConfirm }) => {
+	if (!isOpen) return null;
+
+	return (
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+			<div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+				<div className="flex justify-between items-center mb-4">
+					<h2 className="text-xl font-bold">Response Summary</h2>
+					<button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+						&times;
+					</button>
+				</div>
+
+				<div className="mb-4 max-h-96 overflow-y-auto">
+					<h3 className="font-medium text-lg mb-2">Files to be submitted:</h3>
+					<div className="space-y-2 grid grid-cols-1 md:grid-cols-2 py-3">
+						{responses.map((response, index) => (
+							<div key={index} className="bg-white p-4 rounded-lg shadow-md">
+								<div className="flex justify-between items-center">
+									<div className="flex items-center gap-2">
+										<FileText />
+										<div>
+											<p className="font-medium capitalize text-gray-800">{response.title}</p>
+											<p className="text-xs text-gray-500">
+												{formatDate(response.createdAt)}
+											</p>
+										</div>
+									</div>
+									<a
+										href={response.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm flex items-center gap-1"
+									>
+										<Eye size={18} /> View
+									</a>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<div className="flex justify-end space-x-3">
+					<button
+						onClick={onClose}
+						className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+					>
+						Cancel
+					</button>
+					<button
+						onClick={onConfirm}
+						className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+					>
+						Confirm Submission
 					</button>
 				</div>
 			</div>

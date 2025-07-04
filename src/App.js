@@ -15,6 +15,7 @@ import OrderDetails from './pages/OrderDetails';
 import Writers from './pages/Admin/Writers';
 import Users from './pages/Admin/Users';
 import Orders from './pages/Admin/Orders';
+import OrderDetailView from './components/Admin/Orders/OrderDetailView';
 
 const App = () => {
   return (
@@ -36,7 +37,7 @@ const App = () => {
         <Route path="/admin/writer/:id" element={<Writers />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/orders" element={<Orders />} />
-        <Route path="/admin/order/:id" element={<Orders />} />
+        <Route path="/admin/order/:id" element={<OrderDetailView />} />
       </Routes>
     </BrowserRouter>
   )

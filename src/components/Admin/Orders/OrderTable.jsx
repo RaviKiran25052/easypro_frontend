@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AssignWriterModal, ViewReviewModal, ViewReasonModal } from './OrderModals';
-import { Eye, UserPlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -214,12 +214,12 @@ const OrderTable = () => {
 							<tbody className="bg-white divide-y divide-gray-200">
 								{orders.map((order) => (
 									<tr key={order._id}>
-										<td className="px-6 py-4 whitespace-nowrap text-gray-500">
+										<td className="space-y-1 px-6 py-4 whitespace-nowrap text-gray-500">
 											<p>{order.subject}</p>
 											<p className='text-xs'>#ID_{order._id}</p>
 										</td>
 										<td className="px-6 py-4 whitespace-nowrap text-gray-500 capitalize">{order.type}</td>
-										<td className="px-6 py-4 whitespace-nowrap text-gray-500">{order.writer || "Not Assigned"}</td>
+										<td className="px-6 py-4 whitespace-nowrap text-gray-500">{order.writer?.fullName || "Not Assigned"}</td>
 										<td className="px-6 py-4 whitespace-nowrap text-gray-500">
 											{formatDate(order.deadline)}
 										</td>
@@ -280,7 +280,7 @@ const OrderTable = () => {
 					{/* Pagination */}
 					<div className="flex items-center justify-between mt-4">
 						<div>
-							<p className="text-sm text-gray-700">
+							<p className="text-xs md:text-sm text-gray-700">
 								Showing <span className="font-medium">{(pagination.currentPage - 1) * limit + 1}</span> to{' '}
 								<span className="font-medium">{Math.min(pagination.currentPage * limit, pagination.totalOrders)}</span> of{' '}
 								<span className="font-medium">{pagination.totalOrders}</span> orders
@@ -290,16 +290,18 @@ const OrderTable = () => {
 							<button
 								onClick={() => handlePageChange(pagination.currentPage - 1)}
 								disabled={!pagination.hasPrev}
-								className={`px-4 py-2 border rounded-md ${pagination.hasPrev ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
+								className={`flex items-center gap-2 p-2 border rounded-md ${pagination.hasPrev ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
 							>
-								Previous
+								<ChevronLeft size={18}/>
+								<span className='hidden md:block'>Previous</span>
 							</button>
 							<button
 								onClick={() => handlePageChange(pagination.currentPage + 1)}
 								disabled={!pagination.hasNext}
-								className={`px-4 py-2 border rounded-md ${pagination.hasNext ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
+								className={`flex items-center gap-2 p-2 border rounded-md ${pagination.hasNext ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
 							>
-								Next
+								<span className='hidden md:block'>Next</span>
+								<ChevronRight size={18}/>
 							</button>
 						</div>
 					</div>
