@@ -1,20 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
 	Plus,
 	User,
 	Mail,
 	Star,
-	Calendar,
-	Award,
 	Users,
 	Edit,
 	Trash2,
 	UserPlus,
-	Code,
 	Search,
-	Filter,
 	ArrowUpDown,
-	ChevronDown,
 	Eye
 } from 'lucide-react';
 import axios from 'axios';
@@ -25,6 +21,7 @@ import HandleWriter from '../../components/Admin/Writers/HandleWriter';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Writers = () => {
+	const navigate = useNavigate();
 	const [writers, setWriters] = useState([]);
 	const [filteredWriters, setFilteredWriters] = useState([]);
 	const [showModal, setShowModal] = useState(false);
@@ -489,7 +486,7 @@ const Writers = () => {
 											return (
 												<tr key={writer._id} className="hover:bg-gray-50 transition-colors">
 													{/* Writer Column */}
-													<td className="py-4 px-6">
+													<td className="py-4 px-6 group cursor-pointer" onClick={()=> navigate(`/admin/writer/${writer._id}`)}>
 														<div className="flex items-center gap-3">
 															{writer.profilePic ? (
 																<div className="relative flex-shrink-0">
@@ -517,7 +514,7 @@ const Writers = () => {
 																</div>
 															)}
 															<div>
-																<div className="font-medium text-gray-900">{writer.fullName}</div>
+																<div className="font-medium text-gray-900 group-hover:underline">{writer.fullName}</div>
 																<div className="text-sm text-gray-500 flex items-center gap-1">
 																	<Mail className="w-3 h-3" />
 																	{writer.email}
