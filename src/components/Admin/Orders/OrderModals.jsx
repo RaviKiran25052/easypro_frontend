@@ -1,4 +1,4 @@
-import { Eye, FileText } from "lucide-react";
+import { Eye, FileText, X } from "lucide-react";
 
 const formatDate = (deadline) => {
 	const dateUTC = new Date(deadline);
@@ -206,14 +206,12 @@ export const ResponseSummaryModal = ({ isOpen, onClose, responses, onConfirm }) 
 			<div className="bg-white rounded-lg p-6 w-full max-w-2xl">
 				<div className="flex justify-between items-center mb-4">
 					<h2 className="text-xl font-bold">Response Summary</h2>
-					<button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-						&times;
-					</button>
+					<X onClick={onClose} className="text-gray-500 hover:text-gray-700 cursor-pointer"/>
 				</div>
 
 				<div className="mb-4 max-h-96 overflow-y-auto">
 					<h3 className="font-medium text-lg mb-2">Files to be submitted:</h3>
-					<div className="space-y-2 grid grid-cols-1 md:grid-cols-2 py-3">
+					<div className="gap-2 grid grid-cols-1 md:grid-cols-2 py-3">
 						{responses.map((response, index) => (
 							<div key={index} className="bg-white p-4 rounded-lg shadow-md">
 								<div className="flex justify-between items-center">
