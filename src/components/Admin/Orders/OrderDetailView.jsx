@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Check, CircleAlert, Clock8, ClockFading, Eye, FileText, FileWarning, Star, TriangleAlert, UserPlus } from 'lucide-react';
+import { Check, ChevronLeft, CircleAlert, Clock8, ClockFading, Eye, FileText, FileWarning, Star, TriangleAlert, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { AssignWriterModal, ViewReviewModal, ViewReasonModal, ResponseSummaryModal } from './OrderModals';
@@ -489,6 +489,12 @@ const OrderDetailView = () => {
 
 	return (
 		<div className="container mx-auto px-6 md:px-20 py-8">
+			<button
+				onClick={() => navigate(-1)}
+				className='flex items-center gap-1 bg-gray-300 rounded-md py-2 pr-3 pl-2 mb-6'
+			>
+				<ChevronLeft size={18} /> Back
+			</button>
 			{/* Header Card */}
 			<div className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl shadow-xl overflow-hidden mb-6">
 				<div className="p-6 md:p-8">

@@ -206,9 +206,9 @@ const OrderTable = () => {
 									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
 									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
 									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Writer</th>
-									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
-									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-									<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+									<th scope="col" className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+									<th scope="col" className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+									<th scope="col" className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 								</tr>
 							</thead>
 							<tbody className="bg-white divide-y divide-gray-200">
@@ -226,8 +226,8 @@ const OrderTable = () => {
 										<td className="px-6 py-4 whitespace-nowrap">
 											{getStatusBadge(order.status.state)}
 										</td>
-										<td className="px-6 py-4 whitespace-nowrap font-medium">
-											<div className="flex space-x-2">
+										<td className="px-6 py-4 whitespace-nowrap font-medium text-sm">
+											<div className="flex justify-center space-x-2">
 												{/* View button - always shown */}
 												<button
 													onClick={() => navigate(`/admin/order/${order._id}`)}
@@ -255,10 +255,6 @@ const OrderTable = () => {
 													>
 														View Review
 													</button>
-												)}
-
-												{order.status.state === 'completed' && !order.review && (
-													<span className="text-gray-500">Completed</span>
 												)}
 
 												{order.status.state === 'cancelled' && (
