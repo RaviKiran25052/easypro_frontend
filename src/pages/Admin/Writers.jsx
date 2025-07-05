@@ -523,10 +523,10 @@ const Writers = () => {
 																	{[...Array(5)].map((_, i) => (
 																		<Star
 																			key={i}
-																			className={`w-3 h-3 ${i < writer.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`}
+																			className={`w-3 h-3 ${i < writer.rating?.avgRating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`}
 																		/>
 																	))}
-																	<span className="text-xs text-gray-500 ml-1">({writer.rating})</span>
+																	<span className="text-xs text-gray-500 ml-1">({writer.rating?.count || 0})</span>
 																</div>
 															</div>
 														</div>
