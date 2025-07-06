@@ -14,7 +14,8 @@ const NavBar = () => {
 		{ label: "Home", link: "/admin/home" },
 		{ label: "Users", link: "/admin/users" },
 		{ label: "Orders", link: "/admin/orders" },
-		{ label: "Writers", link: "/admin/writers" }
+		{ label: "Writers", link: "/admin/writers" },
+		{ label: "Resources", link: "/admin/resources" }
 	];
 
 	const userProfileDropdown = [

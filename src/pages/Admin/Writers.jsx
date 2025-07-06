@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
 	Plus,
 	User,
 	Mail,
 	Star,
 	Users,
-	Edit,
 	Trash2,
 	UserPlus,
 	Search,
@@ -21,7 +19,6 @@ import HandleWriter from '../../components/Admin/Writers/HandleWriter';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Writers = () => {
-	const navigate = useNavigate();
 	const [writers, setWriters] = useState([]);
 	const [filteredWriters, setFilteredWriters] = useState([]);
 	const [showModal, setShowModal] = useState(false);
@@ -486,7 +483,7 @@ const Writers = () => {
 											return (
 												<tr key={writer._id} className="hover:bg-gray-50 transition-colors">
 													{/* Writer Column */}
-													<td className="py-4 px-6 group cursor-pointer" onClick={()=> navigate(`/admin/writer/${writer._id}`)}>
+													<td className="py-4 px-6 group cursor-pointer" onClick={() => handleEdit(writer)}>
 														<div className="flex items-center gap-3">
 															{writer.profilePic ? (
 																<div className="relative flex-shrink-0">
@@ -577,13 +574,6 @@ const Writers = () => {
 																onClick={() => handleEdit(writer)}
 																className="text-gray-600 hover:text-gray-800 hover:bg-gray-50 p-2 rounded-lg transition-colors"
 																title="Edit Writer"
-															>
-																<Edit className="w-4 h-4" />
-															</button>
-															<button
-																onClick={() => deleteWriter(writer._id)}
-																className="text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded-lg transition-colors"
-																title="Delete Writer"
 															>
 																<Trash2 className="w-4 h-4" />
 															</button>

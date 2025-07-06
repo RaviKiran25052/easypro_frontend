@@ -16,6 +16,8 @@ import Writers from './pages/Admin/Writers';
 import Users from './pages/Admin/Users';
 import Orders from './pages/Admin/Orders';
 import OrderDetailLayout from './pages/Admin/OrderDetailLayout';
+import ResourceList from './pages/ResourceList';
+import Resources from './pages/Admin/Resources';
 
 const App = () => {
   return (
@@ -29,6 +31,7 @@ const App = () => {
         <Route path="/howitworks" element={<HowItWorks />} />
         <Route path="/top-writers" element={<TopWriters />} />
         <Route path="/order" element={<PlaceOrder />} />
+        <Route path="/resource" element={<ResourceList />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/contactus" element={<ContactUs />} />
@@ -37,6 +40,7 @@ const App = () => {
         <Route path="/admin/writer/:id" element={<Writers />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/orders" element={<Orders />} />
+        <Route path="/admin/resources" element={<Resources />} />
         <Route path="/admin/order/:id" element={<OrderDetailLayout />} />
       </Routes>
     </BrowserRouter>

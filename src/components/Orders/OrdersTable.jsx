@@ -24,9 +24,18 @@ const OrdersTable = () => {
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const [pagination, setPagination] = useState({});
-	const [currentPage, setCurrentPage] = useState(1);
 	const navigate = useNavigate();
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		totalPages: 1,
+		totalOrders: 0,
+		hasNext: false,
+		hasPrev: false
+	});
+	const [filters, setFilters] = useState({
+		status: '',
+		type: ''
+	});
 	const limit = 10;
 
 	// Modal states
@@ -60,12 +69,18 @@ const OrdersTable = () => {
 
 	useEffect(() => {
 		fetchOrders();
-	}, [currentPage]);
+	}, [pagination.currentPage, filters]);
 
 	const fetchOrders = async () => {
 		try {
 			setLoading(true);
-			const response = await axios.get(`${API_URL}/order?page=${currentPage}&limit=${limit}`, {
+			const response = await axios.get(`${API_URL}/order`, {
+				params: {
+					status: filters.status,
+					type: filters.type,
+					page: pagination.currentPage,
+					limit: limit
+				},
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				}
@@ -130,6 +145,12 @@ const OrdersTable = () => {
 		const formattedTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
 
 		return `${day}/${month}/${year}, ${formattedTime}`;
+	};
+
+	const handleFilterChange = (e) => {
+		const { name, value } = e.target;
+		setFilters(prev => ({ ...prev, [name]: value }));
+		setPagination(prev => ({ ...prev, currentPage: 1 }));
 	};
 
 	const handleCancelOrder = async (data) => {
@@ -355,9 +376,45 @@ const OrdersTable = () => {
 
 	return (
 		<div className="w-full max-w-7xl mx-auto p-4 md:px-20">
+			<h2 className="text-xl font-semibold text-gray-900 mb-6">My Orders</h2>
 			<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 				<div className="px-6 py-4 border-b border-gray-200">
-					<h2 className="text-xl font-semibold text-gray-900">My Orders</h2>
+					<div className="flex flex-wrap gap-4">
+						<div className="w-full md:w-auto">
+							<label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+							<select
+								id="status"
+								name="status"
+								value={filters.status}
+								onChange={handleFilterChange}
+								className="w-full md:w-48 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border"
+							>
+								<option value="">All Statuses</option>
+								<option value="assigned">Assigned</option>
+								<option value="unassigned">Unassigned</option>
+								<option value="pending">Pending</option>
+								<option value="completed">Completed</option>
+								<option value="cancelled">Cancelled</option>
+								<option value="expired">Expired</option>
+							</select>
+						</div>
+
+						<div className="w-full md:w-auto">
+							<label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+							<select
+								id="type"
+								name="type"
+								value={filters.type}
+								onChange={handleFilterChange}
+								className="w-full md:w-48 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border"
+							>
+								<option value="">All Types</option>
+								<option value="writing">Writing</option>
+								<option value="editing">Editing</option>
+								<option value="technical">Technical</option>
+							</select>
+						</div>
+					</div>
 				</div>
 
 				<div className="overflow-x-auto">
@@ -388,12 +445,12 @@ const OrdersTable = () => {
 										<div className="flex flex-col items-center justify-center space-y-3">
 											<Files className="w-12 h-12 text-gray-400" />
 											<p className="text-gray-500 text-lg font-medium">No orders found</p>
-											<button 
-											className='bg-blue-600 hover:bg-blue-800 rounded-md py-2 px-3 text-white text-sm'
-											onClick={()=>navigate('/order')}
-												>
-													Place Order
-													</button>
+											<button
+												className='bg-blue-600 hover:bg-blue-800 rounded-md py-2 px-3 text-white text-sm'
+												onClick={() => navigate('/order')}
+											>
+												Place Order
+											</button>
 										</div>
 									</td>
 								</tr>
@@ -449,18 +506,28 @@ const OrdersTable = () => {
 				{pagination.totalPages > 1 && (
 					<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
 						<div className="text-sm text-gray-700">
-							Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * 10, pagination.totalOrders)} of {pagination.totalOrders} orders
+							Showing {((pagination.currentPage - 1) * limit) + 1} to {Math.min(pagination.currentPage * limit, pagination.totalOrders)} of {pagination.totalOrders} orders
 						</div>
 						<div className="flex gap-2">
 							<button
-								onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+								onClick={() =>
+									setPagination(prev => ({
+										...prev,
+										currentPage: Math.max(1, prev.currentPage - 1)
+									}))
+								}
 								disabled={!pagination.hasPrev}
 								className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								Previous
 							</button>
 							<button
-								onClick={() => setCurrentPage(prev => prev + 1)}
+								onClick={() =>
+									setPagination(prev => ({
+										...prev,
+										currentPage: prev.currentPage + 1
+									}))
+								}
 								disabled={!pagination.hasNext}
 								className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
