@@ -12,7 +12,8 @@ import {
 	Clock,
 	CheckCircle,
 	AlertCircle,
-	XCircle
+	XCircle,
+	Files
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import OrderModals from './OrderModals';
@@ -381,48 +382,66 @@ const OrdersTable = () => {
 							</tr>
 						</thead>
 						<tbody className="bg-white divide-y divide-gray-200">
-							{orders.map((order) => (
-								<tr key={order._id} className="hover:bg-gray-50">
-									<td className="px-6 py-4 cursor-pointer"
-										onClick={() => navigate(`/order/${order._id}`)}>
-										<div className="flex items-start gap-3">
-											<FileText className="w-5 h-5 text-gray-400 mt-0.5" />
-											<div>
-												<p className="text-sm font-medium text-gray-900 hover:underline">{order.subject}</p>
-												<p className="text-sm text-gray-500">{order.type} • {order.paperType}</p>
-												{order.pageCount && (
-													<p className="text-xs text-gray-400">{order.pageCount} pages</p>
-												)}
-											</div>
+							{orders.length === 0 ? (
+								<tr>
+									<td colSpan={5} className="px-6 py-12 text-center">
+										<div className="flex flex-col items-center justify-center space-y-3">
+											<Files className="w-12 h-12 text-gray-400" />
+											<p className="text-gray-500 text-lg font-medium">No orders found</p>
+											<button 
+											className='bg-blue-600 hover:bg-blue-800 rounded-md py-2 px-3 text-white text-sm'
+											onClick={()=>navigate('/order')}
+												>
+													Place Order
+													</button>
 										</div>
-									</td>
-									<td className="px-6 py-4 text-center">
-										<span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status.state)}`}>
-											{getStatusIcon(order.status.state)}
-											{order.status.state}
-										</span>
-									</td>
-									<td className="px-6 py-4 text-center">
-										<div className="flex items-center gap-1 text-sm text-gray-900">
-											<Calendar className="w-4 h-4 text-gray-400" />
-											{formatDate(order.deadline)}
-										</div>
-									</td>
-									<td className="px-6 py-4">
-										{order.writer ? (
-											<div className="flex items-center gap-1 text-sm text-gray-900">
-												<User className="w-4 h-4 text-gray-400" />
-												{order.writer.fullName}
-											</div>
-										) : (
-											<span className="text-sm text-gray-400">Not assigned</span>
-										)}
-									</td>
-									<td className="px-6 py-4 text-center">
-										{renderActions(order)}
 									</td>
 								</tr>
-							))}
+							) : <>
+								{orders.map((order) => (
+									<tr key={order._id} className="hover:bg-gray-50">
+										<td className="px-6 py-4 cursor-pointer"
+											onClick={() => navigate(`/order/${order._id}`)}>
+											<div className="flex items-start gap-3">
+												<FileText className="w-5 h-5 text-gray-400 mt-0.5" />
+												<div>
+													<p className="text-sm font-medium text-gray-900 hover:underline">{order.subject}</p>
+													<p className="text-sm text-gray-500">{order.type} • {order.paperType}</p>
+													{order.pageCount && (
+														<p className="text-xs text-gray-400">{order.pageCount} pages</p>
+													)}
+												</div>
+											</div>
+										</td>
+										<td className="px-6 py-4 text-center">
+											<span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status.state)}`}>
+												{getStatusIcon(order.status.state)}
+												{order.status.state}
+											</span>
+										</td>
+										<td className="px-6 py-4 text-center">
+											<div className="flex items-center gap-1 text-sm text-gray-900">
+												<Calendar className="w-4 h-4 text-gray-400" />
+												{formatDate(order.deadline)}
+											</div>
+										</td>
+										<td className="px-6 py-4">
+											{order.writer ? (
+												<div className="flex items-center gap-1 text-sm text-gray-900">
+													<User className="w-4 h-4 text-gray-400" />
+													{order.writer.fullName}
+												</div>
+											) : (
+												<span className="text-sm text-gray-400">Not assigned</span>
+											)}
+										</td>
+										<td className="px-6 py-4 text-center">
+											{renderActions(order)}
+										</td>
+									</tr>
+								))}
+							</>
+							}
 						</tbody>
 					</table>
 				</div>

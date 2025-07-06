@@ -47,7 +47,7 @@ export const AssignWriterModal = ({ isOpen, onClose, order, writers, onAssign })
 									<div>
 										<p className="font-medium">{writer.fullName}</p>
 										<p className="text-sm text-gray-600">
-											Rating: {writer.rating} • Orders Left: {writer.ordersLeft}
+											Rating: {writer.rating.avgRating} ({writer.rating.count}) • Orders Left: {writer.ordersLeft}
 										</p>
 										<p className="text-sm text-gray-600">
 											Skills: {writer.skills?.map(s => s.skill).join(', ')}

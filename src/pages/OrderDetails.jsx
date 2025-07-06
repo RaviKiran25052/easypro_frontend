@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import {
 	Calendar,
 	FileText,
 	Edit,
-	User,
 	XCircle,
 	Clock,
 	Star,
 	Mail,
-	Eye
+	Eye,
+	UserPlus,
+	ChevronLeft
 } from 'lucide-react';
+import NavBar from '../components/NavBar';
 import ReviewModal from '../components/Orders/ReviewModal';
 import ReasonModal from '../components/Orders/ReasonModal';
 import EditOrderModal from '../components/Orders/EditOrderModal';
@@ -21,6 +23,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const OrderDetails = () => {
 	const { id } = useParams();
+	const navigate = useNavigate();
 	const [order, setOrder] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
@@ -69,7 +72,8 @@ const OrderDetails = () => {
 	};
 
 	const renderStatus = () => {
-		switch (order.status.state) {
+		const status = order.status.state;
+		switch (status) {
 			case 'assigned':
 			case 'pending':
 			case 'completed':
@@ -140,8 +144,14 @@ const OrderDetails = () => {
 									</button>
 									:
 									<button
+										disabled={status !== 'completed'}
 										onClick={() => setShowReviewModal(true)}
-										className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 hover:border-green-300 transition-all duration-200 shadow-sm hover:shadow-md"
+										className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-lg
+										${status === 'completed' ?
+												"text-green-700 bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300"
+												: "text-gray-700 bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300 cursor-not-allowed"
+											}
+											transition-all duration-200 shadow-sm hover:shadow-md`}
 									>
 										<Star className="w-4 h-4" />
 										Leave Review
@@ -153,14 +163,17 @@ const OrderDetails = () => {
 				);
 			case 'unassigned':
 				return (
-					<div className="flex items-center text-gray-600">
-						<User className="mr-2" size={20} />
-						Writer to be assigned
+					<div className="mt-6">
+						<h3 className="text-lg font-semibold mb-2">Writer Details</h3>
+						<div className="flex items-center text-amber-500">
+							<UserPlus className="mr-2" size={20} />
+							Writer to be assigned
+						</div>
 					</div>
 				);
 			case 'cancelled':
 				return (
-					<div className="flex items-center text-red-600">
+					<div className="flex items-center text-red-600 mt-6">
 						<XCircle className="mr-2" size={20} />
 						Cancelled
 						<button
@@ -173,7 +186,7 @@ const OrderDetails = () => {
 				);
 			case 'expired':
 				return (
-					<div className="flex items-center text-orange-600">
+					<div className="flex items-center text-orange-600 mt-6">
 						<Clock className="mr-2" size={20} />
 						Expired on {formatDate(order.deadline)}
 					</div>
@@ -183,60 +196,65 @@ const OrderDetails = () => {
 		}
 	};
 
-	const renderOrderTypeSpecificDetails = () => {
+	const renderOrderDetails = () => {
+		if (!order) return null;
 
-		switch (order.type) {
-			case 'writing':
-				return (
-					<div className="mt-6">
-						<h3 className="text-lg font-semibold mb-2">Writing Details</h3>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="bg-gray-50 p-4 rounded-md">
-								<p className="text-gray-600">Paper Type</p>
-								<p className="font-medium">{order.paperType || 'Not specified'}</p>
-							</div>
-							<div className="bg-gray-50 p-4 rounded-md">
-								<p className="text-gray-600">Page Count</p>
-								<p className="font-medium">{order.pageCount}</p>
-							</div>
-							{order.slides && (
-								<div className="bg-gray-50 p-4 rounded-md">
-									<p className="text-gray-600">Slides Count</p>
-									<p className="font-medium">{order.slides}</p>
-								</div>
-							)}
+		const details = {
+			writing: [
+				{ label: 'Paper Type', value: order.paperType || 'Not specified' },
+				{ label: 'Page Count', value: order.pageCount },
+				{ label: 'Slides', value: order.slides || 'Not specified' }
+			],
+			editing: [
+				{ label: 'Page Count', value: order.pageCount }
+			],
+			technical: [
+				{ label: 'Software', value: order.software || 'Not specified' },
+				{ label: 'Assigned Writer', value: order.writer ? order.writer.fullName : 'Not assigned' }
+			]
+		};
+
+		return (
+			<div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl shadow-lg mb-6">
+				<h3 className="font-semibold text-xl mb-4 text-gray-800">{order.type.charAt(0).toUpperCase() + order.type.slice(1)} Details</h3>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{details[order.type].map((item, index) => (
+						<div key={index} className="bg-white p-4 rounded-lg shadow-xs">
+							<p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{item.label}</p>
+							<p className="text-lg font-semibold text-gray-800 mt-1">{item.value}</p>
 						</div>
-					</div>
-				);
-			case 'editing':
-				return (
-					<div className="mt-6">
-						<h3 className="text-lg font-semibold mb-2">Editing Details</h3>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="bg-gray-50 p-4 rounded-md">
-								<p className="text-gray-600">Page Count</p>
-								<p className="font-medium">{order.pageCount}</p>
+					))}
+				</div>
+			</div>
+		);
+	};
+
+	const renderAttachments = () => {
+		if (!order.files || order.files.length === 0) return null;
+
+		return (
+			<div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-sm mb-6">
+				<h3 className="font-semibold text-xl mb-4 text-gray-800">Attachments</h3>
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+					{order.files.map((file, index) => (
+						<div key={index} className="bg-white p-3 rounded-lg shadow-xs flex justify-between items-center gap-3">
+							<div className="bg-blue-50 p-2 rounded-lg">
+								<FileText className="w-6 h-6 text-blue-500" />
 							</div>
+							<p className="text-gray-800">{file.split('/').pop()}</p>
+							<a
+								href={file}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm flex items-center gap-1"
+							>
+								<Eye size={18} /> View
+							</a>
 						</div>
-					</div>
-				);
-			case 'technical':
-				return (
-					<div className="mt-6">
-						<h3 className="text-lg font-semibold mb-2">Technical Details</h3>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							{order.software && (
-								<div className="bg-gray-50 p-4 rounded-md">
-									<p className="text-gray-600">Software</p>
-									<p className="font-medium">{order.software}</p>
-								</div>
-							)}
-						</div>
-					</div>
-				);
-			default:
-				return null;
-		}
+					))}
+				</div>
+			</div >
+		);
 	};
 
 	const handleSubmitReview = async () => {
@@ -278,130 +296,135 @@ const OrderDetails = () => {
 	};
 
 	return (
-		<div className="container mx-auto px-4 py-8">
-			<div className="bg-white rounded-lg shadow-md p-6">
-				<div className="flex justify-between items-start mb-6">
-					<div>
-						<h1 className="text-2xl font-bold text-gray-800">
-							{order.type.charAt(0).toUpperCase() + order.type.slice(1)} Order
-						</h1>
-						<p className="text-gray-600">Order ID: {order._id}</p>
-					</div>
-					<div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-						{order.status.state.charAt(0).toUpperCase() + order.status.state.slice(1)}
-					</div>
-				</div>
-
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-					<div className="bg-gray-50 p-4 rounded-md">
-						<p className="text-gray-600">Subject</p>
-						<p className="font-medium text-lg">{order.subject}</p>
-					</div>
-					<div className="bg-gray-50 p-4 rounded-md">
-						<p className="text-gray-600">Deadline</p>
-						<div className="flex items-center">
-							<Calendar className="mr-2" size={18} />
-							<p className="font-medium">{formatDate(order.deadline)}</p>
+		<>
+			<NavBar />
+			<div className="container mx-auto px-6 md:px-20 pt-6 pb-20">
+				<button
+					onClick={() => navigate(-1)}
+					className='flex items-center gap-1 bg-gray-300 rounded-md py-2 pr-3 pl-2 mb-6 text-xs md:text-base'
+				>
+					<ChevronLeft size={18} /> Back
+				</button>
+				<div className="space-y-6">
+					<div className="flex justify-between items-start">
+						<div>
+							<h1 className="text-lg md:text-2xl font-bold text-gray-800">
+								{order.type.charAt(0).toUpperCase() + order.type.slice(1)} Order
+							</h1>
+							<p className="text-gray-600 text-sm">Order ID: {order._id}</p>
+						</div>
+						<div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+							{order.status.state.charAt(0).toUpperCase() + order.status.state.slice(1)}
 						</div>
 					</div>
-				</div>
 
-				{order.instruction && (
-					<div className="mt-6 bg-gray-50 p-4 rounded-md">
-						<p className="text-gray-600">Instructions</p>
-						<p className="font-medium mt-1 whitespace-pre-line">{order.instruction}</p>
+					<div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-md overflow-hidden">
+						<div className="p-4">
+							<h2 className="font-semibold text-xl mb-4 text-gray-800">Basic Information</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div className="space-y-4">
+									<div>
+										<p className="text-sm font-medium text-gray-500">Subject</p>
+										<p className="text-lg font-semibold text-gray-800">{order.subject}</p>
+									</div>
+									<div>
+										<p className="text-sm font-medium text-gray-500">Deadline</p>
+										<p className="text-lg font-semibold text-gray-800">
+											{formatDate(order.deadline)}
+										</p>
+									</div>
+								</div>
+
+								<div>
+									<p className="text-sm font-medium text-gray-500">Instructions</p>
+									<div className="mt-1 bg-white p-4 rounded-lg">
+										<p className="whitespace-pre-wrap text-gray-800">
+											{order.instruction || 'No instructions provided'}
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				)}
 
-				{renderOrderTypeSpecificDetails()}
+					{/* Type-specific details */}
+					{renderOrderDetails()}
 
-				{order.files && order.files.length > 0 && (
-					<div className="mt-6">
-						<h3 className="text-lg font-semibold mb-2">Attached Files</h3>
-						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-							{order.files.map((file, index) => (
-								<a
-									key={index}
-									href={file}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="flex items-center p-3 border rounded-md hover:bg-gray-50"
+					{/* Attachments */}
+					{renderAttachments()}
+
+					{renderStatus()}
+
+					{(order.type === 'writing' || order.type === 'editing') &&
+						order.status.state === 'unassigned' && (
+							<div className="mt-6">
+								<button
+									onClick={() => setShowEditModal(true)}
+									className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
 								>
-									<FileText className="mr-2" size={18} />
-									<span className="truncate">File {index + 1}</span>
-								</a>
-							))}
-						</div>
-					</div>
-				)}
+									<Edit className="mr-2" size={18} />
+									Edit Order
+								</button>
+							</div>
+						)}
 
-				{renderStatus()}
-
-				{(order.type === 'writing' || order.type === 'editing') &&
-					order.status.state === 'unassigned' && (
-						<div className="mt-6">
-							<button
-								onClick={() => setShowEditModal(true)}
-								className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-							>
-								<Edit className="mr-2" size={18} />
-								Edit Order
-							</button>
+					{order.responses && order.responses.length > 0 && (
+						<div className="mt-8">
+							<h2 className="text-lg font-semibold mb-4">Order Responses</h2>
+							<div className="gap-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+								{order.responses.map((response, index) => (
+									<div key={index} className="bg-gray-100 p-4 rounded-lg shadow-xs">
+										<div className="flex justify-between items-center">
+											<div className="flex items-center gap-2">
+												<FileText />
+												<div>
+													<p className="font-medium capitalize text-gray-800">{response.title}</p>
+													<p className="text-xs text-gray-600">
+														{formatDate(response.createdAt)}
+													</p>
+												</div>
+											</div>
+											<a
+												href={response.url}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm flex items-center gap-1"
+											>
+												<Eye size={18} /> View
+											</a>
+										</div>
+									</div>
+								))}
+							</div>
 						</div>
 					)}
+				</div>
 
-				{order.responses && order.responses.length > 0 && (
-					<div className="mt-8">
-						<h2 className="text-xl font-bold mb-4">Order Responses</h2>
-						<div className="space-y-4">
-							{order.responses.map((response, index) => (
-								<div key={index} className="border rounded-md p-4">
-									<div className="flex justify-between items-center mb-2">
-										<h3 className="font-medium">{response.title || `Response ${index + 1}`}</h3>
-										<span className="text-sm text-gray-500">
-											{formatDate(response.createdAt)}
-										</span>
-									</div>
-									<a
-										href={response.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="inline-flex items-center text-blue-600 hover:underline"
-									>
-										<FileText className="mr-1" size={16} />
-										Download File
-									</a>
-								</div>
-							))}
-						</div>
-					</div>
+				<ReviewModal
+					isOpen={showReviewModal}
+					order={order}
+					reviewData={reviewData}
+					setReviewData={setReviewData}
+					handleSubmitReview={handleSubmitReview}
+					onClose={() => setShowReviewModal(false)}
+				/>
+
+				{showReasonModal && (
+					<ReasonModal
+						reason={order.status.reason}
+						onClose={() => setShowReasonModal(false)}
+					/>
+				)}
+
+				{showEditModal && (
+					<EditOrderModal
+						order={order}
+						onClose={() => setShowEditModal(false)}
+						onSave={handleOrderUpdate}
+					/>
 				)}
 			</div>
-
-			<ReviewModal
-				isOpen={showReviewModal}
-				order={order}
-				reviewData={reviewData}
-				setReviewData={setReviewData}
-				handleSubmitReview={handleSubmitReview}
-				onClose={() => setShowReviewModal(false)}
-			/>
-
-			{showReasonModal && (
-				<ReasonModal
-					reason={order.status.reason}
-					onClose={() => setShowReasonModal(false)}
-				/>
-			)}
-
-			{showEditModal && (
-				<EditOrderModal
-					order={order}
-					onClose={() => setShowEditModal(false)}
-					onSave={handleOrderUpdate}
-				/>
-			)}
-		</div>
+		</>
 	);
 };
 

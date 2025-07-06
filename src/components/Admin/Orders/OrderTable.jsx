@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AssignWriterModal, ViewReviewModal, ViewReasonModal } from './OrderModals';
-import { ChevronLeft, ChevronRight, Eye, UserPlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Files, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -120,7 +120,7 @@ const OrderTable = () => {
 	const handleAssignWriter = async (writerId) => {
 		try {
 			await axios.patch(`${API_URL}/order/admin/${selectedOrder._id}/assign`, {
-				writer: writerId
+				writerId
 			}, {
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -212,63 +212,75 @@ const OrderTable = () => {
 								</tr>
 							</thead>
 							<tbody className="bg-white divide-y divide-gray-200">
-								{orders.map((order) => (
-									<tr key={order._id}>
-										<td className="space-y-1 px-6 py-4 whitespace-nowrap text-gray-500">
-											<p>{order.subject}</p>
-											<p className='text-xs'>#ID_{order._id}</p>
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap text-gray-500 capitalize">{order.type}</td>
-										<td className="px-6 py-4 whitespace-nowrap text-gray-500">{order.writer?.fullName || "Not Assigned"}</td>
-										<td className="px-6 py-4 whitespace-nowrap text-gray-500">
-											{formatDate(order.deadline)}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap">
-											{getStatusBadge(order.status.state)}
-										</td>
-										<td className="px-6 py-4 whitespace-nowrap font-medium text-sm">
-											<div className="flex justify-center space-x-2">
-												{/* View button - always shown */}
-												<button
-													onClick={() => navigate(`/admin/order/${order._id}`)}
-													className="flex items-center gap-1 p-2 rounded-md border border-sky-500 text-white bg-sky-400 hover:bg-sky-600"
-												>
-													<Eye className="w-4 h-4" />
-													View
-												</button>
-
-												{/* Conditional buttons based on status */}
-												{order.status.state === 'unassigned' && (
-													<button
-														onClick={() => handleAssignClick(order)}
-														className="flex items-center gap-1 p-2 rounded-md border border-green-500 text-green-500 hover:text-white hover:bg-green-400"
-													>
-														<UserPlus className="w-4 h-4" />
-														Assign
-													</button>
-												)}
-
-												{order.status.state === 'completed' && order.review && (
-													<button
-														onClick={() => handleReviewClick(order)}
-														className="text-purple-600 hover:text-purple-900"
-													>
-														View Review
-													</button>
-												)}
-
-												{order.status.state === 'cancelled' && (
-													<button
-														onClick={() => handleReasonClick(order)}
-														className="text-red-600 hover:text-red-900"
-													>
-														View Reason
-													</button>
-												)}
+								{orders.length === 0 ? (
+									<tr>
+										<td colSpan={6} className="px-6 py-12 text-center">
+											<div className="flex flex-col items-center justify-center space-y-3">
+												<Files className="w-12 h-12 text-gray-400" />
+												<p className="text-gray-500 text-lg font-medium">No orders found</p>
+												<p className="text-gray-400 text-sm">User orders will appear here once they place the order</p>
 											</div>
 										</td>
 									</tr>
-								))}
+								) : <>
+									{orders.map((order) => (
+										<tr key={order._id}>
+											<td className="space-y-1 px-6 py-4 whitespace-nowrap text-gray-500">
+												<p>{order.subject}</p>
+												<p className='text-xs'>#ID_{order._id}</p>
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap text-gray-500 capitalize">{order.type}</td>
+											<td className="px-6 py-4 whitespace-nowrap text-gray-500">{order.writer?.fullName || "Not Assigned"}</td>
+											<td className="px-6 py-4 whitespace-nowrap text-gray-500">
+												{formatDate(order.deadline)}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap">
+												{getStatusBadge(order.status.state)}
+											</td>
+											<td className="px-6 py-4 whitespace-nowrap font-medium text-sm">
+												<div className="flex justify-center space-x-2">
+													{/* View button - always shown */}
+													<button
+														onClick={() => navigate(`/admin/order/${order._id}`)}
+														className="flex items-center gap-1 p-2 rounded-md border border-sky-500 text-white bg-sky-400 hover:bg-sky-600"
+													>
+														<Eye className="w-4 h-4" />
+														View
+													</button>
+
+													{/* Conditional buttons based on status */}
+													{order.status.state === 'unassigned' && (
+														<button
+															onClick={() => handleAssignClick(order)}
+															className="flex items-center gap-1 p-2 rounded-md border border-green-500 text-green-500 hover:text-white hover:bg-green-400"
+														>
+															<UserPlus className="w-4 h-4" />
+															Assign
+														</button>
+													)}
+
+													{order.status.state === 'completed' && order.review && (
+														<button
+															onClick={() => handleReviewClick(order)}
+															className="text-purple-600 hover:text-purple-900"
+														>
+															View Review
+														</button>
+													)}
+
+													{order.status.state === 'cancelled' && (
+														<button
+															onClick={() => handleReasonClick(order)}
+															className="text-red-600 hover:text-red-900"
+														>
+															View Reason
+														</button>
+													)}
+												</div>
+											</td>
+										</tr>
+									))}
+								</>}
 							</tbody>
 						</table>
 					</div>
@@ -288,7 +300,7 @@ const OrderTable = () => {
 								disabled={!pagination.hasPrev}
 								className={`flex items-center gap-2 p-2 border rounded-md ${pagination.hasPrev ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
 							>
-								<ChevronLeft size={18}/>
+								<ChevronLeft size={18} />
 								<span className='hidden md:block'>Previous</span>
 							</button>
 							<button
@@ -297,7 +309,7 @@ const OrderTable = () => {
 								className={`flex items-center gap-2 p-2 border rounded-md ${pagination.hasNext ? 'bg-white hover:bg-gray-50' : 'bg-gray-100 cursor-not-allowed'}`}
 							>
 								<span className='hidden md:block'>Next</span>
-								<ChevronRight size={18}/>
+								<ChevronRight size={18} />
 							</button>
 						</div>
 					</div>

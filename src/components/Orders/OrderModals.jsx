@@ -417,7 +417,7 @@ const OrderModals = ({
 																<div className="flex items-center gap-1 mt-1">
 																	<Star className="w-4 h-4 text-yellow-400 fill-current" />
 																	<span className="text-sm text-gray-600">
-																		{writer.rating || 0}/5
+																		{writer.rating.avgRating} ({writer.rating.count})
 																	</span>
 																</div>
 															</div>

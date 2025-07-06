@@ -255,23 +255,19 @@ const OrderDetailView = () => {
 				<h3 className="font-semibold text-xl mb-4 text-gray-800">Attachments</h3>
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 					{order.files.map((file, index) => (
-						<div key={index} className="bg-white p-3 rounded-lg shadow-xs flex items-center">
-							<div className="bg-blue-50 p-2 rounded-lg mr-3">
-								<svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-								</svg>
+						<div key={index} className="bg-white p-3 rounded-lg shadow-xs flex justify-between items-center gap-3">
+							<div className="bg-blue-50 p-2 rounded-lg">
+								<FileText className="w-6 h-6 text-blue-500" />
 							</div>
-							<div className="truncate">
-								<p className="text-sm font-medium text-gray-800 truncate">{file.split('/').pop()}</p>
-								<a
-									href={file}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-xs text-blue-600 hover:text-blue-800"
-								>
-									Download
-								</a>
-							</div>
+							<p className="text-gray-800">{file.split('/').pop()}</p>
+							<a
+								href={file}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm flex items-center gap-1"
+							>
+								<Eye size={18} /> View
+							</a>
 						</div>
 					))}
 				</div>
