@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import OrderTypeSelection from '../components/Orders/OrderTypeSelection';
 import WritingOrderFlow from '../components/Orders/WritingOrderFlow';
 import EditingOrderFlow from '../components/Orders/EditingOrderFlow';
 import TechnicalOrderFlow from '../components/Orders/TechnicalOrderFlow';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -17,6 +18,7 @@ const getDaysRemaining = (deadline) => {
 };
 
 const PlaceOrder = () => {
+	const location = useLocation();
 	const [currentStep, setCurrentStep] = useState(0);
 	const [orderData, setOrderData] = useState({
 		type: '',
@@ -195,6 +197,17 @@ const PlaceOrder = () => {
 				return <OrderTypeSelection updateOrderData={updateOrderData} onNext={nextStep} />;
 		}
 	};
+
+	useEffect(() => {		
+		if (currentStep === 1 && location.state) {
+			const { instructions = '', files = [] } = location.state;
+			setOrderData((prev) => ({
+				...prev,
+				instructions,
+				files
+			}));
+		}
+	}, [currentStep, location.state]);
 
 	return (
 		<div className="max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg min-h-[600px]">

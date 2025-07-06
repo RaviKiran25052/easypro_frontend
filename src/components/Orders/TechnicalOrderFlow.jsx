@@ -46,7 +46,7 @@ const TechnicalOrderFlow = ({
 
 		return `${year}-${month}-${day}T${hours}:${minutes}`;
 	};
-	
+
 	const fetchWriters = async (subject, deadline) => {
 		try {
 			setIsLoadingWriters(true);
@@ -349,23 +349,26 @@ const TechnicalOrderFlow = ({
 														<div className="flex items-center space-x-2 text-sm text-gray-600">
 															<div className="flex items-center">
 																<Star size={14} className="text-yellow-400 fill-current" />
-																<span className="ml-1">{writer.rating > 0 ? writer.rating.toFixed(1) : 'New'}</span>
+																<span className="ml-1">{writer.rating?.avgRating > 0 ? `${writer.rating?.avgRating} (${writer.rating?.count})` : 'New'}</span>
 															</div>
 															<span>•</span>
-															<span>{writer.maxOrders} max orders</span>
+															<span>Orders Left: {writer.ordersLeft}/{writer.maxOrders}</span>
 														</div>
-														{writer.skills && writer.skills.length > 0 && (
-															<div className="flex flex-wrap gap-1 mt-2">
-																{writer.skills.slice(0, 3).map((skillObj, index) => (
-																	<span
-																		key={index}
-																		className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded"
-																	>
-																		{skillObj.skill}
-																	</span>
-																))}
-															</div>
-														)}
+														<div className="flex flex-wrap gap-1 mt-1">
+															{writer.skills.slice(0, 3).map((skill, index) => (
+																<span
+																	key={index}
+																	className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full"
+																>
+																	{skill.skill}
+																</span>
+															))}
+															{writer.skills.length > 3 && (
+																<span className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">
+																	+{writer.skills.length - 3}
+																</span>
+															)}
+														</div>
 													</div>
 												</div>
 											</div>

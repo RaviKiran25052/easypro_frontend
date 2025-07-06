@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Paperclip, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
-		note: '',
+		instructions: '',
 		files: []
 	});
 
 	const handleInputChange = (e) => {
 		setFormData({
 			...formData,
-			note: e.target.value
+			instructions: e.target.value
 		});
 	};
 
@@ -23,6 +25,9 @@ const Hero = () => {
 	};
 
 	const handleSubmit = () => {
+		navigate('/order', {
+			state: formData,
+		})
 		console.log('Form submitted:', formData);
 	};
 
@@ -48,7 +53,7 @@ const Hero = () => {
 							{/* Text Area */}
 							<div>
 								<textarea
-									value={formData.note}
+									value={formData.instructions}
 									onChange={handleInputChange}
 									placeholder="Give a short note on what you want"
 									className="w-full h-32 px-4 py-3 border border-orange-300 bg-[#fffbf7] rounded-3xl resize-none focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-transparent placeholder-gray-400 text-gray-700"
