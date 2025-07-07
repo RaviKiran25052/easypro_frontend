@@ -6,25 +6,23 @@ import {
 	ArrowUpDown,
 	ChevronLeft,
 	ChevronRight,
-	FileText,
-	FileVideo,
-	FileAudio,
-	FileImage,
-	FileCode,
-	FileArchive,
 	File,
 	User
 } from 'lucide-react';
 import NavBar from '../components/NavBar';
+import { useLocation } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ResourceList = () => {
+	const location = useLocation();
+	console.log(location.state.type);
+
 	const [resources, setResources] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [filters, setFilters] = useState({
-		type: '',
+		type: location.state?.type || '',
 		subject: ''
 	});
 	const [sortConfig, setSortConfig] = useState({
@@ -89,16 +87,6 @@ const ResourceList = () => {
 		setSortConfig({ key, direction });
 	};
 
-	const getFileIcon = (type) => {
-		if (type.includes('pdf')) return <FileText className="text-red-500" />;
-		if (type.includes('video')) return <FileVideo className="text-blue-500" />;
-		if (type.includes('audio')) return <FileAudio className="text-purple-500" />;
-		if (type.includes('image')) return <FileImage className="text-green-500" />;
-		if (type.includes('zip') || type.includes('rar')) return <FileArchive className="text-yellow-500" />;
-		if (type.includes('code') || type.includes('programming')) return <FileCode className="text-indigo-500" />;
-		return <File className="text-gray-500" />;
-	};
-
 	const getThumbnailUrl = (url) => {
 		// Replace file extension with .png for thumbnail
 		return url.replace(/\.[^/.]+$/, '.png');
@@ -114,24 +102,6 @@ const ResourceList = () => {
 	};
 
 	const totalPages = Math.ceil(pagination.totalItems / pagination.itemsPerPage);
-
-	if (loading && resources.length === 0) {
-		return (
-			<div className="flex items-center justify-center h-64">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-			</div>
-		);
-	}
-
-	if (!loading && resources.length === 0) {
-		return (
-			<div className="flex flex-col items-center justify-center h-64 text-gray-500">
-				<File className="w-12 h-12 mb-4" />
-				<p className="text-xl">No resources found</p>
-				<p className="text-sm">Try adjusting your search or filters</p>
-			</div>
-		);
-	}
 
 	return (
 		<>
@@ -166,12 +136,13 @@ const ResourceList = () => {
 									onChange={(e) => handleFilterChange('type', e.target.value)}
 								>
 									<option value="">All Types</option>
-									<option value="pdf">PDF</option>
-									<option value="video">Video</option>
-									<option value="audio">Audio</option>
-									<option value="image">Image</option>
-									<option value="code">Code</option>
-									<option value="document">Document</option>
+									<option value="thesis">Thesis Writings</option>
+									<option value="video">Essay Writings</option>
+									<option value="study notes">Study Notes</option>
+									<option value="research papers">Research Papers</option>
+									<option value="exam papers">Exam Papers</option>
+									<option value="guide">Guide</option>
+									<option value="journals">Journals</option>
 								</select>
 							</div>
 
@@ -219,61 +190,79 @@ const ResourceList = () => {
 					</div>
 				</div>
 
-				{/* Resource Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-					{resources.map((resource) => (
-						<div key={resource._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-							<div className="relative h-48 bg-gray-100">
-								<img
-									src={getThumbnailUrl(resource.url)}
-									alt={resource.title}
-									className="w-full h-full object-cover"
-									onError={(e) => {
-										e.target.src = 'https://via.placeholder.com/300x200?text=No+Preview';
-									}}
-								/>
-								<div className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1">
-									{getFileIcon(resource.type)}
-								</div>
-								<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-									<h3 className="text-white font-semibold truncate">{resource.title}</h3>
-								</div>
+				{loading ?
+					<div className="flex items-center justify-center h-64">
+						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+					</div>
+					:
+					<>
+						{resources.length === 0 ?
+							(
+								<div className="flex flex-col items-center justify-center h-64 text-gray-500">
+									<File className="w-12 h-12 mb-4" />
+									<p className="text-xl">No resources found</p>
+									<p className="text-sm">Try adjusting your search or filters</p>
+								</div>)
+							:
+							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+								{resources.map((resource) => (
+									<div key={resource._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+										<div className="relative h-48 bg-gray-100">
+											<img
+												src={getThumbnailUrl(resource.url)}
+												alt={resource.title}
+												className="w-full h-full object-cover"
+												onError={(e) => {
+													e.target.src = 'https://via.placeholder.com/300x200?text=No+Preview';
+												}}
+											/>
+											<div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-500 to-transparent p-4 pt-10">
+												<h3 className="text-white font-semibold truncate capitalize">{resource.title}</h3>
+											</div>
+										</div>
+
+										<div className="p-4">
+											<div className="flex justify-between items-center mb-2 text-xs">
+												<span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded">
+													{resource.subject}
+												</span>
+												<span>{new Date(resource.createdAt).toLocaleDateString('en-IN', {
+													timeZone: 'Asia/Kolkata',
+													day: 'numeric',
+													month: 'long',
+													year: 'numeric'
+												})}</span>
+											</div>
+
+											<p className="text-gray-600 text-sm my-3 line-clamp-2">{resource.description}</p>
+
+											<div className="flex flex-wrap gap-1 mb-3">
+												{resource.tags?.slice(0, 3).map((tag, index) => (
+													<span key={index} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+														{tag}
+													</span>
+												))}
+												{resource.tags?.length > 3 && (
+													<span className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+														+{resource.tags.length - 3}
+													</span>
+												)}
+											</div>
+
+											<div className="flex justify-between items-center text-sm text-gray-500">
+												<span className="text-gray-500 flex items-center">
+													<User className="w-4 h-4 mr-1" />
+													{resource.author?.fullName || 'Unknown'}
+												</span>
+												<span>{resource.views} views</span>
+											</div>
+										</div>
+									</div>
+								))}
 							</div>
-
-							<div className="p-4">
-								<div className="flex justify-between items-start mb-2">
-									<span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-										{resource.subject}
-									</span>
-									<span className="text-gray-500 text-sm flex items-center">
-										<User className="w-4 h-4 mr-1" />
-										{resource.author?.fullName || 'Unknown'}
-									</span>
-								</div>
-
-								<p className="text-gray-600 text-sm mb-3 line-clamp-2">{resource.description}</p>
-
-								<div className="flex flex-wrap gap-1 mb-3">
-									{resource.tags?.slice(0, 3).map((tag, index) => (
-										<span key={index} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
-											{tag}
-										</span>
-									))}
-									{resource.tags?.length > 3 && (
-										<span className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
-											+{resource.tags.length - 3}
-										</span>
-									)}
-								</div>
-
-								<div className="flex justify-between items-center text-sm text-gray-500">
-									<span>{new Date(resource.createdAt).toLocaleDateString()}</span>
-									<span>{resource.views} views</span>
-								</div>
-							</div>
-						</div>
-					))}
-				</div>
+						}
+					</>
+				}
 
 				{/* Pagination */}
 				{totalPages > 1 && (
