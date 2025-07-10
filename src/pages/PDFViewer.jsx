@@ -93,7 +93,6 @@ const PDFViewer = () => {
 
 			if (response.data.success) {
 				setResource(response.data.data);
-				toast.success('Resource loaded successfully');
 			} else {
 				throw new Error(response.data.message || 'Failed to fetch resource');
 			}
