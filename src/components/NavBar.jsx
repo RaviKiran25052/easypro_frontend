@@ -15,7 +15,7 @@ const NavBar = () => {
 
 	const navLinks = [
 		{
-			label: "Services", links: [
+			label: "Services", link: "/order", links: [
 				{ label: 'Essay Writing', link: "/order" },
 				{ label: 'Plagiarism Checker', link: "/plagiarism" },
 				{ label: 'Paraphrasing', link: "/order" },
@@ -26,7 +26,7 @@ const NavBar = () => {
 			]
 		},
 		{
-			label: "Resources", links: [
+			label: "Resources", link: "/resources", links: [
 				{ label: 'Thesis Writings', link: "/resources", type: "thesis" },
 				{ label: 'Essay Writings', link: "/resources", type: "essay" },
 				{ label: 'Study Notes', link: "/resources", type: "study notes" },
@@ -51,7 +51,7 @@ const NavBar = () => {
 		{ label: "My Orders", link: "/user/orders" },
 		{ label: "Top Writers", link: "/top-writers" },
 		{
-			label: "Services", links: [
+			label: "Services", link: "/order", links: [
 				{ label: 'Essay Writing', link: "/order" },
 				{ label: 'Plagiarism Checker', link: "/plagiarism" },
 				{ label: 'Paraphrasing', link: "/order" },
@@ -62,7 +62,7 @@ const NavBar = () => {
 			]
 		},
 		{
-			label: "Resources", links: [
+			label: "Resources", link: "/resources", links: [
 				{ label: 'Thesis Writings', link: "/resources", type: "thesis" },
 				{ label: 'Essay Writings', link: "/resources", type: "essay" },
 				{ label: 'Study Notes', link: "/resources", type: "study notes" },
@@ -130,7 +130,8 @@ const NavBar = () => {
 												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
 												onMouseLeave={handleDropdownLeave}
 											>
-												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
+													onClick={() => navigate(navItem.link)}>
 													<span>{navItem.label}</span>
 													<ChevronDown className="w-4 h-4" />
 												</button>
@@ -180,7 +181,8 @@ const NavBar = () => {
 												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
 												onMouseLeave={handleDropdownLeave}
 											>
-												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
+													onClick={() => navigate(navItem.link)}>
 													<span>{navItem.label}</span>
 													<ChevronDown className="w-4 h-4" />
 												</button>
@@ -312,7 +314,8 @@ const NavBar = () => {
 												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
 												onMouseLeave={handleDropdownLeave}
 											>
-												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
+													onClick={() => navigate(navItem.link)}>
 													<span>{navItem.label}</span>
 													<ChevronDown className="w-4 h-4" />
 												</button>
@@ -379,7 +382,8 @@ const NavBar = () => {
 												onMouseEnter={() => handleDropdownEnter(navItem.label.toLowerCase().replace(/\s+/g, ''))}
 												onMouseLeave={handleDropdownLeave}
 											>
-												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors">
+												<button className="flex items-center space-x-1 text-gray-700 hover:text-gray-900 transition-colors"
+													onClick={() => navigate(navItem.link)}>
 													<span>{navItem.label}</span>
 													<ChevronDown className="w-4 h-4" />
 												</button>

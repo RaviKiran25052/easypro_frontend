@@ -19,6 +19,7 @@ import OrderDetailLayout from './pages/Admin/OrderDetailLayout';
 import ResourceList from './pages/ResourceList';
 import Resources from './pages/Admin/Resources';
 import Plagiarism from './pages/Plagiarism';
+import PDFViewer from './pages/PDFViewer';
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/top-writers" element={<TopWriters />} />
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/resources" element={<ResourceList />} />
+        <Route path="/resource/:id" element={<PDFViewer />} />
         <Route path="/plagiarism" element={<Plagiarism />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/faqs" element={<Faqs />} />

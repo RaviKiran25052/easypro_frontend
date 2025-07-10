@@ -10,13 +10,13 @@ import {
 	User
 } from 'lucide-react';
 import NavBar from '../components/NavBar';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ResourceList = () => {
 	const location = useLocation();
-
+	const navigate = useNavigate();
 	const [resources, setResources] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -206,7 +206,8 @@ const ResourceList = () => {
 							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 								{resources.map((resource) => (
 									<div key={resource._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-										<div className="relative h-48 bg-gray-100">
+										<div className="relative h-48 bg-gray-100 cursor-pointer"
+											onClick={() => navigate(`/resource/${resource._id}`)}>
 											<img
 												src={getThumbnailUrl(resource.url)}
 												alt={resource.title}
