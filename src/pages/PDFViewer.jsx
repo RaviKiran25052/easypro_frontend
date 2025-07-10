@@ -137,7 +137,6 @@ const PDFViewer = () => {
 	const handleOpenExternal = () => {
 		if (resource?.url) {
 			window.open(resource.url, '_blank');
-			toast.info('Opening PDF in new tab');
 		}
 	};
 
