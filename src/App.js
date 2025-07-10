@@ -18,6 +18,7 @@ import Orders from './pages/Admin/Orders';
 import OrderDetailLayout from './pages/Admin/OrderDetailLayout';
 import ResourceList from './pages/ResourceList';
 import Resources from './pages/Admin/Resources';
+import Plagiarism from './pages/Plagiarism';
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/top-writers" element={<TopWriters />} />
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/resources" element={<ResourceList />} />
+        <Route path="/plagiarism" element={<Plagiarism />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/faqs" element={<Faqs />} />
         <Route path="/contactus" element={<ContactUs />} />

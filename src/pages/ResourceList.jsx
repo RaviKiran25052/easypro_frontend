@@ -16,7 +16,6 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ResourceList = () => {
 	const location = useLocation();
-	console.log(location.state.type);
 
 	const [resources, setResources] = useState([]);
 	const [loading, setLoading] = useState(true);

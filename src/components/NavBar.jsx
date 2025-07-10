@@ -16,21 +16,24 @@ const NavBar = () => {
 	const navLinks = [
 		{
 			label: "Services", links: [
-				{ label: 'Essay Writing', link: "/" },
-				{ label: 'Plagiarism Checker', link: "/" },
-				{ label: 'Paraphrasing', link: "/" },
-				{ label: 'Thesis Writing', link: "/" },
-				{ label: 'Powerpoint Presentation', link: "/" },
-				{ label: 'Homework', link: "/" },
-				{ label: 'Assignment Help', link: "/" }
+				{ label: 'Essay Writing', link: "/order" },
+				{ label: 'Plagiarism Checker', link: "/plagiarism" },
+				{ label: 'Paraphrasing', link: "/order" },
+				{ label: 'Thesis Writing', link: "/order" },
+				{ label: 'Powerpoint Presentation', link: "/order" },
+				{ label: 'Homework', link: "/order" },
+				{ label: 'Assignment Help', link: "/order" }
 			]
 		},
 		{
 			label: "Resources", links: [
-				{ label: 'Thesis Writings', link: "/" },
-				{ label: 'Essay Writings', link: "/" },
-				{ label: 'Study Notes', link: "/" },
-				{ label: 'Documents', link: "/" }
+				{ label: 'Thesis Writings', link: "/resources", type: "thesis" },
+				{ label: 'Essay Writings', link: "/resources", type: "essay" },
+				{ label: 'Study Notes', link: "/resources", type: "study notes" },
+				{ label: 'Research Papers', link: "/resources", type: "research papers" },
+				{ label: 'Exam Papers', link: "/resources", type: "exam papers" },
+				{ label: 'Guide', link: "/resources", type: "guide" },
+				{ label: 'Journals', link: "/resources", type: "journals" },
 			]
 		},
 		{ label: "How it works", link: "/howitworks" },
@@ -49,13 +52,13 @@ const NavBar = () => {
 		{ label: "Top Writers", link: "/top-writers" },
 		{
 			label: "Services", links: [
-				{ label: 'Essay Writing', link: "/" },
-				{ label: 'Plagiarism Checker', link: "/" },
-				{ label: 'Paraphrasing', link: "/" },
-				{ label: 'Thesis Writing', link: "/" },
-				{ label: 'Powerpoint Presentation', link: "/" },
-				{ label: 'Homework', link: "/" },
-				{ label: 'Assignment Help', link: "/" }
+				{ label: 'Essay Writing', link: "/order" },
+				{ label: 'Plagiarism Checker', link: "/plagiarism" },
+				{ label: 'Paraphrasing', link: "/order" },
+				{ label: 'Thesis Writing', link: "/order" },
+				{ label: 'Powerpoint Presentation', link: "/order" },
+				{ label: 'Homework', link: "/order" },
+				{ label: 'Assignment Help', link: "/order" }
 			]
 		},
 		{
@@ -321,13 +324,15 @@ const NavBar = () => {
 														onMouseLeave={handleDropdownLeave}
 													>
 														{navItem.links.map((dropdownItem, dropdownIndex) => (
-															<a
+															<span
 																key={dropdownIndex}
-																href={dropdownItem.link}
+																onClick={() => navigate(dropdownItem.link, {
+																	state: dropdownItem.type ? { type: dropdownItem.type } : undefined
+																})}
 																className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
 															>
 																{dropdownItem.label}
-															</a>
+															</span>
 														))}
 													</div>
 												)}
